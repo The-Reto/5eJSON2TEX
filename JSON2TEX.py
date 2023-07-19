@@ -42,6 +42,8 @@ class TexRenderer:
         header = '''\\documentclass[10pt,twoside,twocolumn,openany,nodeprecatedcode]{dndbook}
 \\usepackage[utf8]{inputenc}
 \\usepackage{tabulary}
+\\usepackage[normalem]{ulem}
+\\usepackage{color,soul}
 \\title{@DOCUMENT_TITLE \\\\ \\large @DOCUMENT_SUBTITLE}
 \\author{@AUTHORS}
 \\DndSetThemeColor[PhbMauve]
@@ -160,9 +162,9 @@ class TexRenderer:
         alignments = data.get("colStyles")
         alignments = " ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c")
         self.appendLine(str("\\begin{DndTable}{" + alignments + "}\n"))
-        self.appendLine(str(" & ".join(titles) + "\\\\"))
+        if (titles): self.appendLine(str(" & ".join(titles) + "\\\\"))
         for row in data.get("rows"):
-            self.appendLine(str(" & ".join(row) + "\\\\"))
+            if (isinstance(row, str)): self.appendLine(str(" & ".join(row) + "\\\\"))
         self.appendLine(str("\\end{DndTable}\n\n"))
 
     '''
@@ -202,30 +204,42 @@ class TexRenderer:
         self.appendLine(line + "\n")
 
     '''
-    Appends a line to the 'lines' container, deals with in text tags. Recursive to deal with nested tags
+    Appends a line to the 'lines' container, deals with in text tags.
     '''
     def appendLine(self, line):
         TagPattern = "\{@.*?\}"
         tags = re.findall(TagPattern, line)
-        if tags:
+        while tags:
             for tag in tags:
                 line = self.resolveTag(line, tag)
-            self.appendLine(line)
+            tags = re.findall(TagPattern, line)
         else:
             self.lines.append(line)
 
     '''
-    Resolves in text tags
+    Resolves in text tags this is ugly
     '''
     def resolveTag(self, line, tag):
-        if re.findall("{@b .*?}", tag):
-            return line.replace(tag, tag.replace("{@b ", "\\textbf{"))
-        elif re.findall("{@i .*?}", tag):
-            return line.replace(tag, tag.replace("{@i ", "\\textit{"))
+        if re.findall("{@b .*?}", tag) or re.findall("{@bold .*?}", tag):
+            return line.replace(tag, tag.replace("{@bold ", "{@b ").replace("{@b ", "\\textbf{"))
+        elif re.findall("{@i .*?}", tag) or re.findall("{@italic .*?}", tag):
+            return line.replace(tag, tag.replace("{@italic ", "{@i ").replace("{@i ", "\\textit{"))
+        elif re.findall("{@u .*?}", tag) or re.findall("{@underline .*?}", tag):
+            return line.replace(tag, tag.replace("{@underline ", "{@u ").replace("{@u ", "\\underline{"))
+        elif re.findall("{@s .*?}", tag) or re.findall("{@strike .*?}", tag):
+            return line.replace(tag, tag.replace("{@strike ", "{@s ").replace("{@s ", "\\sout{"))
+        elif re.findall("{@highlight .*?}", tag):
+            return line.replace(tag, tag.replace("{@highlight ", "\\hl{"))
+        elif re.findall("{@sub .*?}", tag):
+            return line.replace(tag, tag.replace("{@sub ", "\\textsubscript{"))
+        elif re.findall("{@sup .*?}", tag):
+            return line.replace(tag, tag.replace("{@sup ", "\\textsuperscript{"))
+        elif re.findall("{@code .*?}", tag):
+            return line.replace(tag, tag.replace("{@code ", "\\texttt{"))
         elif re.findall("{@dice .*?}", tag):
             return line.replace(tag, tag.replace("{@dice ", "").replace("}", ""))
         elif re.findall("{@skill .*?}", tag):
             return line.replace(tag, tag.replace("{@skill ", "\\textit{"))
         else:
             warnings.warn("\nThe following Tag has not yet been implemented: " + tag, category=RuntimeWarning)
-            return line.replace(tag, "UNRESOLVED-TAG")
+            return line.replace(tag, "UNRESOLVED-TAG: (" + tag.replace("{","(").replace("}",")") + ")")
