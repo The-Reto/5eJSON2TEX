@@ -1,6 +1,8 @@
 \documentclass[10pt,twoside,twocolumn,openany,nodeprecatedcode]{dndbook}
 \usepackage[utf8]{inputenc}
 \usepackage{tabulary}
+\usepackage[normalem]{ulem}
+\usepackage{color,soul}
 \title{The exemplary Example Adventure \\ \large 5eJSON2TEX}
 \author{The Reto}
 \DndSetThemeColor[PhbMauve]
@@ -98,9 +100,6 @@ Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming 
 \begin{DndTable}{c X}
 
 Nam liber tempor & Lorem ipsum dolor\\
-Lorem & Ipsum\\
-dolor & amet\\
-a big table entry: & Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. \\
 \end{DndTable}
 
 
@@ -133,4 +132,38 @@ Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
 
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero!
 
+\begin{DndMonster}[width=\textwidth / 2 + 8pt]{Lorem Ipsum}
+\begin{multicols}{2}
+\DndMonsterType{Large Celestial, Lawful Good}
+\DndMonsterAbilityScores[str = 18,dex = 14,con = 15,int = 11,wis = 17,cha = 16]
+\DndMonsterBasics[armor-class = {12 ( horn armor), 10 ( natural armor) when de-horned}, hit-points  = {\DndDice{9d10 + 18}}, speed = {walk 50 ft., fly 30 ft. (when thrown)}]
+\DndMonsterDetails[saving-throws = {\textit{Str} +5 and \textit{Dex} +3}, skills = {\textit{Athletics} +7, \textit{Deception} +7 and \textit{Insight} +5}, damage-vulnerabilities = { force, necrotic and slashing  and  acid when horned}, damage-resistances = { cold and poison }, damage-immunities = {poison}, condition-immunities = {charmed, paralyzed and poisoned}, senses = {darkvision 60 ft. and Passive Perception 13}, languages = {Celestial and Elvish}, challenge = {5}]
+\DndMonsterAction{Magic Resistance}
+The Lorem has advantage on saving throws against spells and other magical effects.
+
+\DndMonsterAction{Magic Weapons}
+The Lorem's weapon attacks are magical.
+
+\DndMonsterSection{Spellcasting}
+Spellcasting is NOT CURRENTLY IMPLEMENTED
+
+\DndMonsterSection{Actions}
+\DndMonsterAction{Multiattack}
+The Lorem makes two attacks: one with its hooves and one with its horn.
+
+\DndMonsterAction{Horn}
+UNRESOLVED-TAG: ((@atk mw)) UNRESOLVED-TAG: ((@hit 7)) to hit, reach 5 ft., one target. Hit: 8 (UNRESOLVED-TAG: ((@damage 1d8 + 4))) piercing damage.
+
+\DndMonsterAction{Teleport (1/Day)}
+The Lorem magically teleports itself and up to three willing creatures it can see within 5 feet of it, along with any equipment they are wearing or carrying, to a location the Lorem is familiar with, up to 1 mile away.
+
+\DndMonsterSection{Legendary Actions}
+\DndMonsterAction{Hooves}
+The Lorem makes one attack with its hooves.
+
+\DndMonsterAction{Shimmering Shield (Costs 2 Actions)}
+The Lorem creates a shimmering, magical field around itself or another creature it can see within 60 feet of it. The target gains a +2 bonus to AC until the end of the Lorem's next turn.
+
+\end{multicols}
+\end{DndMonster}
 \end{document}
