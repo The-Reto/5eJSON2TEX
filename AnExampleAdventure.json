@@ -1,0 +1,238 @@
+{
+	"_meta": {
+		"sources": [
+			{
+				"json": "Example",
+				"abbreviation": "Ex",
+				"full": "An example adventure",
+				"authors": [
+					"The Reto"
+				],
+				"convertedBy": [
+					"The_Reto"
+				],
+				"version": "1.0.0",
+				"url": "www.the-reto.ch",
+				"targetSchema": "1.0.0"
+			}
+		],
+		"dateAdded": 1603117106,
+		"dateLastModified": 1668987711,
+		"_dateLastModifiedHash": "f85779bc06"
+	},
+	"adventure": [
+		{	"name": "The exemplary Example Adventure",
+			"id": "EEA",
+			"source": "EEA",
+			"group": "homebrew",
+			"contents": [
+				{	"name": "Example Chapter",
+					"headers": [
+						"With a header",
+						"or two"
+					]
+				},
+				{	"name": "An other Chapter",
+					"headers": [
+						"with some more headers",
+						"foo",
+						"bar"
+					]
+				},
+				{	"name": "and a last chapter",
+					"headers": [
+						"with some more content",
+						"but that's it"
+					]
+				}
+			],
+			"level": {
+				"start": 5,
+				"end": 7
+			},
+			"published": "2023-07-14",
+			"storyline": "5eJSON2TEX"
+		}
+	],
+	"adventureData": [
+		{
+			"id": "EEA",
+			"source": "EEA",
+			"data": [
+				{	"name": "Example Chapter",
+					"type": "section",
+					"id": "ExampleChapter",
+					"entries": [
+						"{@b The exemplary Example Adventure} is an example module to test the 5eJSON2TEX converter.",
+						{	"name": "With a header",
+							"type": "section",
+							"id": "Withaheader",
+							"entries": [
+								"{@b Lorem ipsum dolor sit amet}, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+								"Ut wisi enim ad minim veniam, quis {@b {@i nostrud exerci} tation} ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at {@i vero eros et accumsan} et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.",
+								"Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat."
+							]
+						},
+						{	"name": "or two",
+							"type": "section",
+							"id": "ortwo",
+							"entries": [
+								"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. ",
+								{
+									"type": "insetReadaloud",
+									"entries": [
+										"Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. "
+									]
+								},
+								{
+									"type": "inset",
+									"entries": [
+										"Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. "
+									]
+								}
+							]
+						}
+					]
+				},
+				{	"name": "An other Chapter",
+					"type": "section",
+					"id": "AnotherChapter",
+					"entries": [
+						{	"type": "quote",
+							"entries": [
+								"Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua"
+							],
+							"by": "Lorem Ipsum",
+							"from": "Duis Autem"
+						},
+						{	"name": "with some more headers",
+							"type": "section",
+							"id": "withsomemoreheaders",
+							"entries": [
+								{	"name": "praesent luptatum",
+									"type": "inset",
+									"entries": [
+										"Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. "
+									]
+								},
+								"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+								"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.",
+								{	"name": "Lorem ipsum dolor sit amet",
+									"type": "insetReadaloud",
+									"entries": [
+										"{@i Lorem ipsum dolor sit amet}, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+										"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. {@b Lorem ipsum dolor sit amet}, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. "
+									]
+								}
+							]
+						},
+						{	"name": "foo",
+							"type": "section",
+							"id": "foo",
+							"entries": [
+								{	"name": "foo, but a level down",
+									"type": "entries",
+									"id": "foobald",
+									"entries": [
+										"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. ",
+										{	"name": "foo, but another level down",
+											"type": "entries",
+											"id": "foobald",
+											"entries": [
+													"At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+													{	"name": "and one last level of foo",
+														"type": "entries",
+														"id": "foobald",
+														"entries": [
+																"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", 
+																"At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet"
+														]
+													}
+												]
+										}
+									]
+								},
+								{	"name": "foo, again",
+									"type": "entries",
+									"id": "fooa",
+									"entries": [
+										"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Ending in a list?",
+										{
+											"type": "list",
+											"items": [
+												"Lorem ipsum dolor sit amet;",
+												"Duis autem vel eum iriure dolor."
+											]
+										},
+										"Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. "
+									]
+								}
+							]
+						},
+						{	"name": "bar",
+							"type": "section",
+							"id": "bar",
+							"entries": [
+								"Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. ",
+								{
+									"type": "table",
+									"colLabels": ["Nam liber tempor", "Lorem ipsum dolor"],
+									"colStyles": ["text-align-center", "text-align-left"],
+									"rows": [
+										["Lorem", "Ipsum"],
+										["dolor", "amet"],
+										["a big table entry:", "Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. "]
+									]
+								}
+							]
+						}
+					]
+				},
+				{ 	"name": "and a last chapter",
+					"type": "section",
+					"id": "And a last Chapter",
+					"entries": [
+						{	"name": "with some more content",
+							"type": "section",
+							"id": "content",
+							"entries": [
+								{	"name": "abc",
+									"type": "entries",
+									"entries": 
+									[
+										"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+										{	"name": "consetetur sadipscing elitr",
+											"type": "inset",
+											"entries": 
+											[
+												"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.",
+												{
+													"type": "list",
+													"items": [
+														"{@b ABC}, At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. ",
+														"{@b DEF}, Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+														"{@b GHI}, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.",
+														"{@b JKL}, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.",
+														"{@b MNO}, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua."
+													]
+												}											]
+										}										
+									]
+								}
+							]
+						},
+						{	"name": "but that's it",
+							"type": "section",
+							"id": "ThatsIt",
+							"entries": [
+								"Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.",
+								"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero!"					
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}
+
