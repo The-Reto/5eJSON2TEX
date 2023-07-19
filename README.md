@@ -26,6 +26,7 @@ The converter can currently convert adventures, in so far as it can display:
 - Text Insets and "Read Aloud" Text Insets 
 - Tables (limited*)
 - Lists (limited*)
+
 *: Cells (in tables) or items (in lists) may currently only consist of strings, more involved objects (such as the "item" object for lists), will not work.
 ### Goal
 The end goal is to have a tool that can fully convert 5e.tools compatible JSONs to LaTeX and therefore, PDFs, but that's a long way off.
