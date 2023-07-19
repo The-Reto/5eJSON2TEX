@@ -31,7 +31,6 @@ class TexRenderer:
         self.renderContent(jsonData.get("adventureData")[0].get("data"))
         self.closeDocument()
         self.writeTex(jsonData.get("adventure")[0])
-        self.convertToPdf()
 
     '''
     Writes the Latex header to the 'lines' container
@@ -127,11 +126,8 @@ class TexRenderer:
     Renders section and chapter headers, then proceedes to recursively loop through the data inside the 'entries' field, again calling renderRecursive with depth increased by 1.
     '''
     def renderSection(self, depth, data):
-        print(data.get("name"))
         if (isinstance(data.get("name"), str)): self.appendLine(str(self.titles[depth] + data.get("name") + "}\n"))
         for section in data.get("entries"):
-            print(section)
-            print(data.get("entries"))
             self.renderRecursive(depth+1, section)
 
     '''
@@ -233,8 +229,3 @@ class TexRenderer:
         else:
             warnings.warn("\nThe following Tag has not yet been implemented: " + tag, category=RuntimeWarning)
             return line.replace(tag, "UNRESOLVED-TAG")
-
-
-renderer = TexRenderer()
-'''renderer.renderAdventure("./Heal_and_Deal_at_Ghir_Karnim.json")'''
-renderer.renderAdventure("./AnExampleAdventure.json")
