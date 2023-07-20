@@ -44,6 +44,12 @@
 						"with some more content",
 						"but that's it"
 					]
+				},
+				{	"name": "Appendix",
+					"headers": [
+						"because Appendix is rendered differently from other chapters",
+						"another heading"
+					]
 				}
 			],
 			"level": {
@@ -63,7 +69,7 @@
 					"type": "section",
 					"id": "ExampleChapter",
 					"entries": [
-						"{@b The exemplary Example Adventure} is an example module to test the 5eJSON2TEX converter.",
+						"The exemplary Example Adventure is an example module to test the 5eJSON2TEX converter.",
 						{	"name": "With a header",
 							"type": "section",
 							"id": "Withaheader",
@@ -227,8 +233,7 @@
 							"entries": [
 								"Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.",
 								"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero!",
-								{
-									"type": "statblockInline",
+								{	"type": "statblockInline",
 									"style": "inset",
 									"dataType": "monster",
 									"data": {
@@ -347,7 +352,7 @@
 											{
 												"name": "Horn",
 												"entries": [
-													"{@atk mw} {@hit 7} to hit, reach 5 ft., one target. Hit: 8 ({@damage 1d8 + 4}) piercing damage."
+													"{@atk mw} {@hit 7} to hit, reach 5 ft., one target. Hit: {@damage 1d8 + 4} piercing damage."
 												]
 											},
 											{
@@ -406,6 +411,130 @@
 										]
 									}
 								}					
+							]
+						}
+					]
+				},
+				{ 	"name": "Appendix",
+					"type": "section",
+					"id": "Appendix",
+					"entries": [
+						{ 	"name": "because Appendix is rendered differently from other chapters",
+							"type": "section",
+							"id": "AppendixSpecial",
+							"entries": 
+							[
+								"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+								"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."
+							]
+						},
+						{ 	"name": "another heading",
+							"type": "section",
+							"id": "AppendixTwo",
+							"entries": 
+							[
+								"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.",
+								{	"type": "statblockInline",
+									"style": "inset",
+									"dataType": "monster",
+									"data": {
+										"name": "Dolor",
+										"size": [
+											"T"
+										],
+										"type": "beast",
+										"source": "MM",
+										"alignment": [
+											"T"
+										],
+										"ac": [
+											12
+										],
+										"hp": {
+											"average": 67,
+											"formula": "9d10 + 18"
+										},
+										"speed": {
+											"walk": 20
+										},
+										"str": 5,
+										"dex": 4,
+										"con": 12,
+										"int": 11,
+										"wis": 13,
+										"cha": 9,
+										"immune": [
+											"poison"
+										],
+										"resist": [
+											"cold",
+											"poison"
+										],
+										"vulnerable": [
+											"force",
+											"necrotic",
+											"slashing"
+										],	
+										"save": {
+											"str": "+5",
+											"dex": "+3"
+										},
+										"skill": {
+											"athletics": "+7",
+											"deception": "+7",
+											"insight": "+5"
+										},
+										"senses": [
+											"darkvision 60 ft."
+										],
+										"passive": 13,
+										"languages": [
+											"Celestial",
+											"Elvish"
+										],
+										"cr": "5",
+										"trait": [
+											{
+												"name": "Magic Resistance",
+												"entries": [
+													"The Lorem has advantage on saving throws against spells and other magical effects."
+												]
+											},
+											{
+												"name": "Magic Weapons",
+												"entries": [
+													"The Lorem's weapon attacks are magical."
+												]
+											}
+										],
+										"action": [
+											{
+												"name": "Multiattack",
+												"entries": [
+													"The Lorem makes two attacks: one with its hooves and one with its horn."
+												]
+											},
+											{
+												"name": "Horn",
+												"entries": [
+													"{@atk mw} {@hit 7} to hit, reach 5 ft., one target. Hit: {@damage 1d8 + 4} piercing damage."
+												]
+											}
+										],
+										"page": 294,
+										"environment": [
+											"forest"
+										],
+										"traitTags": [
+											"Charge",
+											"Magic Resistance",
+											"Magic Weapons"
+										],
+										"actionTags": [
+											"Multiattack"
+										]
+									}
+								}	
 							]
 						}
 					]
