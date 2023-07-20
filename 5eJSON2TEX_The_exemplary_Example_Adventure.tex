@@ -203,4 +203,34 @@ The Lorem makes two attacks: one with its hooves and one with its horn.
 
 \end{multicols}
 \end{DndMonster}
+\begin{DndMonster}[width=\textwidth + 8pt]{Therewolf}
+\begin{multicols}{2}
+\DndMonsterType{Medium Humanoid (human, shapechanger), Chaotic Evil}
+\DndMonsterBasics[armor-class = {11 in humanoid form, 12 ( natural armor) in wolf or hybrid form}, hit-points  = {\DndDice{6d8 + 12}}, speed = {walk 30 ft. (40 ft. in wolf form)}]
+\DndMonsterAbilityScores[str = 15,dex = 13,con = 14,int = 10,wis = 11,cha = 10]
+\DndMonsterDetails[skills = {\textit{Perception} +4}, languages = {Common (can't speak in wolf form)}, challenge = {3}]
+\DndMonsterAction{Shapechanger}
+The therewolf can use its action to polymorph into a wolf-humanoid hybrid or into a wolf, or back into its true form, which is humanoid.
+
+\DndMonsterAction{Teleportation}
+The therewolf can use its bonus action or reaction to teleport to an empty space within 25 feet.
+
+\DndMonsterAction{Keen Hearing and Smell}
+The therewolf has advantage on Wisdom (\textit{Perception}) checks that rely on hearing or smell.
+
+\DndMonsterSection{Actions}
+\DndMonsterAction{Multiattack (Humanoid or Hybrid Form Only)}
+The werewolf makes two attacks: two with its spear (humanoid form) or one with its bite and one with its claws (hybrid form).
+
+\DndMonsterAction{Bite (Wolf or Hybrid Form Only)}
+\textsl{Melee Weapon Attack:} +4 to hit, reach 5 ft., one target. UNRESOLVED-TAG: ((@h))6 (\DndDice{1d8 + 2}) piercing damage. If the target is a humanoid, it must succeed on a UNRESOLVED-TAG: ((@dc 12)) Constitution saving throw or be cursed with werewolf lycanthropy.
+
+\DndMonsterAction{Claws (Hybrid Form Only)}
+\textsl{Melee Weapon Attack:} +4 to hit, reach 5 ft., one creature. UNRESOLVED-TAG: ((@h))7 (\DndDice{2d4 + 2}) slashing damage.
+
+\DndMonsterAction{Spear (Humanoid Form Only)}
+\textsl{Melee or Ranged Weapon Attack:} +4 to hit, reach 5 ft. or range 20/60 ft., one creature. UNRESOLVED-TAG: ((@h))5 (\DndDice{1d6 + 2}) piercing damage, or 6 (\DndDice{1d8 + 2}) piercing damage if used with two hands to make a melee attack.
+
+\end{multicols}
+\end{DndMonster}
 \end{document}

@@ -534,12 +534,167 @@
 											"Multiattack"
 										]
 									}
+								},
+								{	"name": "Therewolf",
+									"type": "statblock",
+									"source": "HnD",
+									"tag": "creature",
+									"style": "inset",
+									"collapsed": true
 								}	
 							]
 						}
 					]
 				}
 			]
+		}
+	],
+	"monster": [
+		{ 	"name": "Therewolf",
+			"group": [
+				"Lycanthropes"
+			],
+			"source": "HnD",
+			"basicRules": true,
+			"size": [
+				"M"
+			],
+			"type": {
+				"type": "humanoid",
+				"tags": [
+					"human",
+					"shapechanger"
+				]
+			},
+			"alignment": [
+				"C",
+				"E"
+			],
+			"ac": [
+				{
+					"ac": 11,
+					"condition": "in humanoid form"
+				},
+				{
+					"ac": 12,
+					"from": [
+						"natural armor"
+					],
+					"condition": "in wolf or hybrid form"
+				}
+			],
+			"hp": {
+				"formula": "6d8 + 12",
+				"average": 39
+			},
+			"speed": {
+				"walk": {
+					"number": 30,
+					"condition": "(40 ft. in wolf form)"
+				}
+			},
+			"str": 15,
+			"dex": 13,
+			"con": 14,
+			"int": 10,
+			"wis": 11,
+			"cha": 10,
+			"skill": {
+				"perception": "+4"
+			},
+			"passive": 14,
+			"languages": [
+				"Common (can't speak in wolf form)"
+			],
+			"cr": "3",
+			"trait": [
+				{
+					"name": "Shapechanger",
+					"entries": [
+						"The therewolf can use its action to polymorph into a wolf-humanoid hybrid or into a wolf, or back into its true form, which is humanoid."
+					]
+				},
+				{
+					"name": "Teleportation",
+					"entries": [
+						"The therewolf can use its bonus action or reaction to teleport to an empty space within 25 feet."
+					]
+				},
+				{
+					"name": "Keen Hearing and Smell",
+					"entries": [
+						"The therewolf has advantage on Wisdom ({@skill Perception}) checks that rely on hearing or smell."
+					]
+				}
+			],
+			"action": [
+				{
+					"name": "Multiattack (Humanoid or Hybrid Form Only)",
+					"entries": [
+						"The werewolf makes two attacks: two with its spear (humanoid form) or one with its bite and one with its claws (hybrid form)."
+					]
+				},
+				{
+					"name": "Bite (Wolf or Hybrid Form Only)",
+					"entries": [
+						"{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}6 ({@damage 1d8 + 2}) piercing damage. If the target is a humanoid, it must succeed on a {@dc 12} Constitution saving throw or be cursed with werewolf lycanthropy."
+					]
+				},
+				{
+					"name": "Claws (Hybrid Form Only)",
+					"entries": [
+						"{@atk mw} {@hit 4} to hit, reach 5 ft., one creature. {@h}7 ({@damage 2d4 + 2}) slashing damage."
+					]
+				},
+				{
+					"name": "Spear (Humanoid Form Only)",
+					"entries": [
+						"{@atk mw,rw} {@hit 4} to hit, reach 5 ft. or range 20/60 ft., one creature. {@h}5 ({@damage 1d6 + 2}) piercing damage, or 6 ({@damage 1d8 + 2}) piercing damage if used with two hands to make a melee attack."
+					]
+				}
+			],
+			"environment": [
+				"forest",
+				"hill"
+			],
+			"soundClip": {
+				"type": "external",
+				"url": "https://5e.tools/audio/bestiary/werewolf.mp3"
+			},
+			"traitTags": [
+				"Keen Senses",
+				"Shapechanger"
+			],
+			"actionTags": [
+				"Multiattack"
+			],
+			"languageTags": [
+				"C",
+				"CS"
+			],
+			"damageTags": [
+				"P",
+				"S"
+			],
+			"miscTags": [
+				"MW",
+				"RW",
+				"THW"
+			],
+			"hasFluff": true,
+			"hasFluffImages": true,
+			"tokenUrl": "https://5e.tools/img/MM/Werewolf.png",
+			"fluff": {
+				"images": [
+					{
+						"type": "image",
+						"href": {
+							"type": "external",
+							"url": "https://5e.tools/img/MM/Werewolf.png"
+						}
+					}
+				]
+			}
 		}
 	]
 }

@@ -9,8 +9,7 @@ class TexRenderer:
         def __init__(self):
             self.lines = []
 
-        def renderInlineStatBlock(self, data, doubleWidht = False):
-            monsterData = data.get("data")
+        def renderInlineStatBlock(self, monsterData, doubleWidht = False):
             if doubleWidht: self.lines.append("\\begin{DndMonster}[width=\\textwidth + 8pt]{@MONSTERNAME}\n\\begin{multicols}{2}".replace("@MONSTERNAME", monsterData.get("name")))
             else: self.lines.append("\\begin{DndMonster}[width=\\textwidth / 2 + 8pt]{@MONSTERNAME}\n\\begin{multicols}{2}".replace("@MONSTERNAME", monsterData.get("name")))
             self.renderMonsterType(monsterData)
@@ -23,13 +22,21 @@ class TexRenderer:
 
         def renderMonsterType(self, monsterData):
             sizes = {"T": "Tiny", "S": "Small", "M": "Medium", "L": "Large", "H": "Huge", "G": "Gargantuan"}
-            alignmentS = {"L": "Lawful", "C": "Chaotic", "N": "Neutral", "G": "Good", "E": "Evil", "T": "True neutral", "U": "Unaligned"}
+            alignments = {"L": "Lawful", "C": "Chaotic", "N": "Neutral", "G": "Good", "E": "Evil", "T": "True neutral", "U": "Unaligned", "A": "Any alignment"}
             typeStrs = []
             for size in monsterData.get("size"):
                 typeStrs.append(sizes.get(size))
-            typeStrs.append(monsterData.get("type").capitalize() + ",")
-            for alignment in monsterData.get("alignment"):
-                typeStrs.append(alignmentS.get(alignment))
+            if isinstance(monsterData.get("type"), str): typeStrs.append(monsterData.get("type").capitalize() + ",")
+            else:
+                type = monsterData.get("type")
+                typeStr = type.get("type").capitalize()
+                if "tags" in type: typeStr += " (@TAGS)".replace("@TAGS", ", ".join(type.get("tags")))                    
+                typeStrs.append(typeStr + ",")
+            if "alignment" in monsterData and monsterData.get("alignment"):
+                for alignment in monsterData.get("alignment"):
+                    typeStrs.append(alignments.get(alignment))
+            else: typeStrs.append(alignments.get("U"))
+            print(typeStrs)
             self.lines.append("\\DndMonsterType{@MONSTERTYPE}".replace("@MONSTERTYPE", " ".join(typeStrs)))
 
         def renderAbilityScores(self, monsterData):
@@ -182,11 +189,11 @@ class TexRenderer:
     '''
     def renderAdventure(self, JSONPath):
         with open(JSONPath) as file:
-            jsonData = json.load(file)
-        self.setUpDocument(jsonData.get("_meta"), jsonData.get("adventure")[0])
-        self.renderContent(jsonData.get("adventureData")[0].get("data"))
+            self.jsonData = json.load(file)
+        self.setUpDocument(self.jsonData.get("_meta"), self.jsonData.get("adventure")[0])
+        self.renderContent(self.jsonData.get("adventureData")[0].get("data"))
         self.closeDocument()
-        self.writeTex(jsonData.get("adventure")[0])
+        self.writeTex(self.jsonData.get("adventure")[0])
 
     '''
     Writes the Latex header to the 'lines' container
@@ -302,7 +309,7 @@ class TexRenderer:
                 self.inAppendix = True
                 triggerAppendix = True
                 self.lines.append("\\onecolumn")
-            self.appendLine(str(self.titles[depth] + data.get("name") + "}\n"))
+            self.appendLine(str(titles[depth] + data.get("name") + "}\n"))
         for section in data.get("entries"):
             self.renderRecursive(depth+1, section)
         if self.inAppendix and triggerAppendix:
@@ -389,7 +396,15 @@ class TexRenderer:
     def renderStatblock(self, data):
         self.inSubEnvironment = True
         renderer = TexRenderer.StatBlockRenderer()
-        linesToAdd = renderer.renderInlineStatBlock(data, self.inAppendix)
+        if data.get("type") == "statblockInline": linesToAdd = renderer.renderInlineStatBlock(data.get("data"), self.inAppendix)
+        elif data.get("type") == "statblock":
+            monsterData = self.jsonData.get("monster")
+            monsterFound = False
+            for monster in monsterData:
+                if monster.get("name") == data.get("name"): 
+                    linesToAdd = renderer.renderInlineStatBlock(monster, self.inAppendix)
+                    monsterFound = True
+            if not monsterFound: linesToAdd = ["Monster @MONSTERNAME not found in this source".replace("@MONSTERNAME", data.get("name"))]
         for line in linesToAdd:
             self.appendLine(line)
         self.inSubEnvironment = False
