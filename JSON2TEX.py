@@ -24,8 +24,10 @@ class TexRenderer:
             sizes = {"T": "Tiny", "S": "Small", "M": "Medium", "L": "Large", "H": "Huge", "G": "Gargantuan"}
             alignments = {"L": "Lawful", "C": "Chaotic", "N": "Neutral", "G": "Good", "E": "Evil", "T": "True neutral", "U": "Unaligned", "A": "Any alignment"}
             typeStrs = []
-            for size in monsterData.get("size"):
-                typeStrs.append(sizes.get(size))
+            print(monsterData)
+            if "size" in monsterData:
+                for size in monsterData.get("size"):
+                    typeStrs.append(sizes.get(size))
             if isinstance(monsterData.get("type"), str): typeStrs.append(monsterData.get("type").capitalize() + ",")
             else:
                 type = monsterData.get("type")
@@ -36,7 +38,6 @@ class TexRenderer:
                 for alignment in monsterData.get("alignment"):
                     typeStrs.append(alignments.get(alignment))
             else: typeStrs.append(alignments.get("U"))
-            print(typeStrs)
             self.lines.append("\\DndMonsterType{@MONSTERTYPE}".replace("@MONSTERTYPE", " ".join(typeStrs)))
 
         def renderAbilityScores(self, monsterData):
@@ -173,6 +174,80 @@ class TexRenderer:
                 for entry in trait.get("entries"):
                     self.lines.append(entry + "\n")
 
+    class InTextTagRenderer:
+        '''
+        Resolves all tags in a string
+        '''
+        def renderLine(self, line):
+            TagPattern = "\{@.*?\}"
+            tags = re.findall(TagPattern, line)
+            while tags:
+                for tag in tags:
+                    line = self.renderTag(line, tag)
+                tags = re.findall(TagPattern, line)
+            return line
+
+        '''
+        resolves a single tag in a string
+        '''
+        def renderTag(self, line, tag):
+            print(line)
+            if re.findall("{@b .*?}", tag) or re.findall("{@bold .*?}", tag):
+                return self.renderTextFormatTag(line, tag, "\\textbf{", "{@bold ", "{@b ")
+            elif re.findall("{@i .*?}", tag) or re.findall("{@italic .*?}", tag):
+                return self.renderTextFormatTag(line, tag, "\\textit{", "{@italic ", "{@i ")
+            elif re.findall("{@u .*?}", tag) or re.findall("{@underline .*?}", tag):
+                return self.renderTextFormatTag(line, tag, "\\underline{", "{@underline ", "{@u ")
+            elif re.findall("{@s .*?}", tag) or re.findall("{@strike .*?}", tag):
+                return self.renderTextFormatTag(line, tag, "\\sout{", "{@strike ", "{@s ")
+            elif re.findall("{@highlight .*?}", tag):
+                return self.renderTextFormatTag(line, tag, "\\hl{", "{@highlight ")
+            elif re.findall("{@sub .*?}", tag):
+                return self.renderTextFormatTag(line, tag, "\\textsubscript{", "{@sub ")
+            elif re.findall("{@sup .*?}", tag):
+                return self.renderTextFormatTag(line, tag, "\\textsuperscript{", "{@sup ")
+            elif re.findall("{@code .*?}", tag):
+                return self.renderTextFormatTag(line, tag, "\\texttt{", "{@code ")
+            elif re.findall("{@dice .*?}", tag):
+                return self.renderDiceTag(line, tag)
+            elif re.findall("{@damage .*?}", tag):
+                return self.renderDiceTag(line.replace("{@damage ", "{@dice "), tag.replace("{@damage ", "{@dice "))
+            elif re.findall("{@hit .*?}", tag):
+                return self.removeTag(line, tag, "{@hit ", "+")
+            elif re.findall("{@dc .*?}", tag):
+                return self.removeTag(line, tag, "{@dc ", "DC ")
+            elif re.findall("{@h}", tag):
+                return line.replace(tag, "\\textit{Hit:} ")
+            elif re.findall("{@skill .*?}", tag):
+                return self.renderTextFormatTag(line, tag, "\\textit{", "{@skill ")
+            elif re.findall("{@spell .*?}", tag):
+                return self.renderTextFormatTag(line, tag, "\\textit{", "{@spell ")
+            elif re.findall("{@condition .*?}", tag):
+                return self.renderTextFormatTag(line, tag, "\\textit{", "{@condition ")
+            elif re.findall("{@atk .*?}", tag):
+                line = self.renderAttackTag(line ,tag)
+                return line
+            else:
+                warnings.warn("\nThe following Tag has not yet been implemented: " + tag, category=RuntimeWarning)
+                return line.replace(tag, "UNRESOLVED-TAG: (" + tag.replace("{","(").replace("}",")") + ")")
+
+        def renderAttackTag(self, line, tag):
+            if tag == "{@atk mw,rw}": tagStr = "\\textsl{Melee or Ranged Weapon Attack:}"
+            if tag == "{@atk rw}": tagStr =  "\\textsl{Ranged Weapon Attack:}"
+            if tag == "{@atk mw}": tagStr =  "\\textsl{Melee Weapon Attack:}"
+            return line.replace(tag, tagStr)
+
+        def removeTag(self, line, tag, tagName, replacementStart = "", replacementEnd = ""):
+            return line.replace(tag, tag.replace(tagName, replacementStart).replace("}",replacementEnd))
+
+        def renderDiceTag(self, line, tag):
+            if (re.findall("{@dice [0-9]{1,}?d[0-9]*?}", tag)): return line.replace(tag, tag.replace("{@dice ", "\\DndDice{"))
+            else: return line.replace(tag, tag.replace("{@dice ", "").replace("}", ""))
+
+        def renderTextFormatTag(self, line, tag, formatStr, tagStart, tagShort = None):
+            if tagShort: return line.replace(tag, tag.replace(tagStart, tagShort).replace(tagShort, formatStr))
+            else: return line.replace(tag, tag.replace(tagStart, formatStr))
+        
     def __init__(self):
         self.lines = []
         self.hadChapterHeading = False
@@ -352,7 +427,7 @@ class TexRenderer:
         self.appendLine(str("\\begin{DndTable}{" + alignments + "}\n"))
         if (titles): self.appendLine(str(" & ".join(titles) + "\\\\"))
         for row in data.get("rows"):
-            self.appendLine(str(" & ".join(row) + "\\\\"))
+            self.appendLine(" & ".join(row) + "\\\\")
         self.appendLine(str("\\end{DndTable}\n\n"))
         self.inSubEnvironment = False
 
@@ -392,7 +467,9 @@ class TexRenderer:
         self.inSubEnvironment = False'''
         warnings.warn("\nImage rendering currently disabled", category=RuntimeWarning)
 
-
+    '''
+    Renders statblocks
+    '''
     def renderStatblock(self, data):
         self.inSubEnvironment = True
         renderer = TexRenderer.StatBlockRenderer()
@@ -421,57 +498,18 @@ class TexRenderer:
     Appends a line to the 'lines' container, deals with in text tags.
     '''
     def appendLine(self, line):
-        TagPattern = "\{@.*?\}"
-        tags = re.findall(TagPattern, line)
-        while tags:
-            for tag in tags:
-                line = self.resolveTag(line, tag)
-            tags = re.findall(TagPattern, line)
-        else:
-            if line.startswith("\\chapter{"):
-                self.hadChapterHeading = True
-            elif self.hadChapterHeading and self.isString and not self.inSubEnvironment:
-                if not line.startswith("\\"):
-                    fs = re.compile(r"([^,.]+)")
-                    part = re.compile(r"^(.+)\s(.+)")
-                    fsentence = re.search(fs, line).group(1)
-                    if len(fsentence) > 35: replaceP = re.search(part, fsentence[0:35]).group(1)
-                    else: replaceP = fsentence
-                    new = "\\DndDropCapLine{" + replaceP.replace(replaceP[0], replaceP[0]+"}{", 1) + "}"
-                    line = line.replace(replaceP, new,1)
-                    self.hadChapterHeading = False
-            self.lines.append(line)
-
-    '''
-    Resolves in text tags this is ugly
-    '''
-    def resolveTag(self, line, tag):
-        if re.findall("{@b .*?}", tag) or re.findall("{@bold .*?}", tag):
-            return line.replace(tag, tag.replace("{@bold ", "{@b ").replace("{@b ", "\\textbf{"))
-        elif re.findall("{@i .*?}", tag) or re.findall("{@italic .*?}", tag):
-            return line.replace(tag, tag.replace("{@italic ", "{@i ").replace("{@i ", "\\textit{"))
-        elif re.findall("{@u .*?}", tag) or re.findall("{@underline .*?}", tag):
-            return line.replace(tag, tag.replace("{@underline ", "{@u ").replace("{@u ", "\\underline{"))
-        elif re.findall("{@s .*?}", tag) or re.findall("{@strike .*?}", tag):
-            return line.replace(tag, tag.replace("{@strike ", "{@s ").replace("{@s ", "\\sout{"))
-        elif re.findall("{@highlight .*?}", tag):
-            return line.replace(tag, tag.replace("{@highlight ", "\\hl{"))
-        elif re.findall("{@sub .*?}", tag):
-            return line.replace(tag, tag.replace("{@sub ", "\\textsubscript{"))
-        elif re.findall("{@sup .*?}", tag):
-            return line.replace(tag, tag.replace("{@sup ", "\\textsuperscript{"))
-        elif re.findall("{@code .*?}", tag):
-            return line.replace(tag, tag.replace("{@code ", "\\texttt{"))
-        elif re.findall("{@dice .*?}", tag):
-            return line.replace(tag, tag.replace("{@dice ", "\\DndDice{"))
-        elif re.findall("{@damage .*?}", tag):
-            return line.replace(tag, tag.replace("{@damage ", "\\DndDice{"))
-        elif re.findall("{@hit .*?}", tag):
-            return line.replace(tag, tag.replace("{@hit ", "+").replace("}",""))
-        elif re.findall("{@skill .*?}", tag):
-            return line.replace(tag, tag.replace("{@skill ", "\\textit{"))
-        elif re.findall("{@atk .*?}", tag):
-            return line.replace(tag, tag.replace("{@atk mw,rw}", "\\textsl{Melee or Ranged Weapon Attack:}").replace("{@atk mw}", "\\textsl{Melee Weapon Attack:}").replace("{@atk rw}", "\\textsl{Ranged Weapon Attack:}"))
-        else:
-            warnings.warn("\nThe following Tag has not yet been implemented: " + tag, category=RuntimeWarning)
-            return line.replace(tag, "UNRESOLVED-TAG: (" + tag.replace("{","(").replace("}",")") + ")")
+        tagRenderer = TexRenderer.InTextTagRenderer()
+        line = tagRenderer.renderLine(line)
+        if line.startswith("\\chapter{"):
+            self.hadChapterHeading = True
+        elif self.hadChapterHeading and self.isString and not self.inSubEnvironment:
+            if not line.startswith("\\"):
+                fs = re.compile(r"([^,.]+)")
+                part = re.compile(r"^(.+)\s(.+)")
+                fsentence = re.search(fs, line).group(1)
+                if len(fsentence) > 35: replaceP = re.search(part, fsentence[0:35]).group(1)
+                else: replaceP = fsentence
+                new = "\\DndDropCapLine{" + replaceP.replace(replaceP[0], replaceP[0]+"}{", 1) + "}"
+                line = line.replace(replaceP, new,1)
+                self.hadChapterHeading = False
+        self.lines.append(line)
