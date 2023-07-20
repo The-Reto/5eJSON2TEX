@@ -9,17 +9,18 @@ class TexRenderer:
         def __init__(self):
             self.lines = []
 
-        def renderInlineStatBlock(self, data):
+        def renderInlineStatBlock(self, data, doubleWidht = False):
             monsterData = data.get("data")
-            self.lines.append("\\begin{DndMonster}[width=\\textwidth / 2 + 8pt]{@MONSTERNAME}\n\\begin{multicols}{2}".replace("@MONSTERNAME", monsterData.get("name")))
+            if doubleWidht: self.lines.append("\\begin{DndMonster}[width=\\textwidth + 8pt]{@MONSTERNAME}\n\\begin{multicols}{2}".replace("@MONSTERNAME", monsterData.get("name")))
+            else: self.lines.append("\\begin{DndMonster}[width=\\textwidth / 2 + 8pt]{@MONSTERNAME}\n\\begin{multicols}{2}".replace("@MONSTERNAME", monsterData.get("name")))
             self.renderMonsterType(monsterData)
-            self.renderAbilityScores(monsterData)
             self.renderMonsterBasics(monsterData)
+            self.renderAbilityScores(monsterData)
             self.renderMonsterDetails(monsterData)
             self.renderMonsterActions(monsterData)
             self.lines.append("\\end{multicols}\n\\end{DndMonster}")
             return self.lines
-        
+
         def renderMonsterType(self, monsterData):
             sizes = {"T": "Tiny", "S": "Small", "M": "Medium", "L": "Large", "H": "Huge", "G": "Gargantuan"}
             alignmentS = {"L": "Lawful", "C": "Chaotic", "N": "Neutral", "G": "Good", "E": "Evil", "T": "True neutral", "U": "Unaligned"}
@@ -54,7 +55,7 @@ class TexRenderer:
         def renderSpeed(self, speedData):
             speeds = []
             for type in speedData.keys():
-                if isinstance(speedData.get(type), int): 
+                if isinstance(speedData.get(type), int):
                     speeds.append("@TYPE @SPEED ft.".replace("@TYPE", type).replace("@SPEED", str(speedData.get(type))))
                 else:
                     speed = speedData.get(type)
@@ -68,7 +69,7 @@ class TexRenderer:
         def renderAC(self, acData):
             ACs = []
             for ac in acData:
-                if isinstance(ac, int): 
+                if isinstance(ac, int):
                     ACs.append(str(ac))
                 else:
                     AC = str(ac.get("ac"))
@@ -120,7 +121,7 @@ class TexRenderer:
                     vunerableStrings.append( pre + " " + self.renderGroupedDetails(vun.get(detailName), detailName) + " " + post )
             returnStr = ", ".join(vunerableStrings)
             return returnStr.replace(", " + vunerableStrings[-1], " and " + vunerableStrings[-1])
-                    
+
         def renderListedDetails(self, detailData):
             skillStrs = []
             for skill in detailData:
@@ -165,27 +166,18 @@ class TexRenderer:
                 for entry in trait.get("entries"):
                     self.lines.append(entry + "\n")
 
-    f_name = "UnnamedFile"
-    temp_name = "5eJSON2TEX_UnnamedFile"
-    titles = [
-        "\\chapter{",
-        "\\section{",
-        "\\subsection{",
-        "\\subsubsection{",
-        "\\paragraph{",
-        "\\subparagraph{"
-    ]
-
     def __init__(self):
         self.lines = []
         self.hadChapterHeading = False
         self.isString = False
         self.inSubEnvironment = False
         self.inAppendix = False
+        self.f_name = "UnnamedFile"
+        self.temp_name = "5eJSON2TEX_UnnamedFile"
 
     '''
     Main routine. Renders a 5e.tools compatible JSON into a PDF using LaTex
-    Inputs: 
+    Inputs:
         JSONPath: Path to JSON File, as a str
     '''
     def renderAdventure(self, JSONPath):
@@ -263,7 +255,7 @@ class TexRenderer:
 
     '''
     Main rendering routine. Can be called recursively.
-    Reads the 'type' field of the 'data' input and 
+    Reads the 'type' field of the 'data' input and
     Inputs:
         depth: recursion depth (used to detirmine the type of header: from chapter down to subparagraph)
         data: general JSON object
@@ -287,6 +279,8 @@ class TexRenderer:
             self.renderImage(data)
         elif data.get("type") == "statblockInline":
             self.renderStatblock(data)
+        elif data.get("type") == "statblock":
+            self.renderStatblock(data)
         else:
             warnings.warn("\nThe following type of JSON-Entry has not yet been implemented: " + data.get("type") + "\nThe entry will be skipped!", category=RuntimeWarning)
 
@@ -294,8 +288,16 @@ class TexRenderer:
     Renders section and chapter headers, then proceedes to recursively loop through the data inside the 'entries' field, again calling renderRecursive with depth increased by 1.
     '''
     def renderSection(self, depth, data):
+        titles = [
+        "\\chapter{",
+        "\\section{",
+        "\\subsection{",
+        "\\subsubsection{",
+        "\\paragraph{",
+        "\\subparagraph{"
+        ]
         triggerAppendix = False
-        if "name" in data: 
+        if "name" in data:
             if data.get("name") == "Appendix":
                 self.inAppendix = True
                 triggerAppendix = True
@@ -303,7 +305,7 @@ class TexRenderer:
             self.appendLine(str(self.titles[depth] + data.get("name") + "}\n"))
         for section in data.get("entries"):
             self.renderRecursive(depth+1, section)
-        if self.inAppendix and triggerAppendix: 
+        if self.inAppendix and triggerAppendix:
             self.inAppendix = False
 
     '''
@@ -311,20 +313,20 @@ class TexRenderer:
     '''
     def renderInset(self, depth, data):
         self.inSubEnvironment = True
-        name = "" 
+        name = ""
         if "name" in data: name = data.get("name")
         self.appendLine("\\begin{DndComment}{" + name + "}")
         for section in data.get("entries"):
             self.renderRecursive(depth+1, section)
         self.appendLine("\\end{DndComment}\n")
         self.inSubEnvironment = False
-    
+
     '''
     Renders a read aloud inset. The content of the inset is passed through renderRecursive again.
     '''
     def renderReadAloudInset(self, depth, data):
         self.inSubEnvironment = True
-        name = "" 
+        name = ""
         if "name" in data: name = data.get("name")
         self.appendLine("\\begin{DndReadAloud}{" + name + "}")
         for section in data.get("entries"):
@@ -382,12 +384,12 @@ class TexRenderer:
         self.appendLine("\\end{figure}\n\\endgroup")
         self.inSubEnvironment = False'''
         warnings.warn("\nImage rendering currently disabled", category=RuntimeWarning)
-        
+
 
     def renderStatblock(self, data):
         self.inSubEnvironment = True
         renderer = TexRenderer.StatBlockRenderer()
-        linesToAdd = renderer.renderInlineStatBlock(data)
+        linesToAdd = renderer.renderInlineStatBlock(data, self.inAppendix)
         for line in linesToAdd:
             self.appendLine(line)
         self.inSubEnvironment = False
@@ -411,10 +413,10 @@ class TexRenderer:
                 line = self.resolveTag(line, tag)
             tags = re.findall(TagPattern, line)
         else:
-            if line.startswith("\\chapter{"): 
+            if line.startswith("\\chapter{"):
                 self.hadChapterHeading = True
             elif self.hadChapterHeading and self.isString and not self.inSubEnvironment:
-                if not line.startswith("\\"): 
+                if not line.startswith("\\"):
                     fs = re.compile(r"([^,.]+)")
                     part = re.compile(r"^(.+)\s(.+)")
                     fsentence = re.search(fs, line).group(1)
