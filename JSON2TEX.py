@@ -424,7 +424,8 @@ class TexRenderer:
         titles = data.get("colLabels")
         alignments = data.get("colStyles")
         alignments = " ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c")
-        self.appendLine(str("\\begin{DndTable}{" + alignments + "}\n"))
+        if "caption" in data: self.appendLine(str("\\begin{DndTable}[header=@CAPTION]{".replace("@CAPTION", data.get("caption")) + alignments + "}\n"))
+        else: self.appendLine(str("\\begin{DndTable}{" + alignments + "}\n"))
         if (titles): self.appendLine(str(" & ".join(titles) + "\\\\"))
         for row in data.get("rows"):
             self.appendLine(" & ".join(row) + "\\\\")
