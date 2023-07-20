@@ -178,6 +178,10 @@ class TexRenderer:
 
     def __init__(self):
         self.lines = []
+        self.hadChapterHeading = False
+        self.isString = False
+        self.inSubEnvironment = False
+        self.inAppendix = False
 
     '''
     Main routine. Renders a 5e.tools compatible JSON into a PDF using LaTex
@@ -290,44 +294,58 @@ class TexRenderer:
     Renders section and chapter headers, then proceedes to recursively loop through the data inside the 'entries' field, again calling renderRecursive with depth increased by 1.
     '''
     def renderSection(self, depth, data):
-        if (isinstance(data.get("name"), str)): self.appendLine(str(self.titles[depth] + data.get("name") + "}\n"))
+        triggerAppendix = False
+        if "name" in data: 
+            if data.get("name") == "Appendix":
+                self.inAppendix = True
+                triggerAppendix = True
+                self.lines.append("\\onecolumn")
+            self.appendLine(str(self.titles[depth] + data.get("name") + "}\n"))
         for section in data.get("entries"):
             self.renderRecursive(depth+1, section)
+        if self.inAppendix and triggerAppendix: 
+            self.inAppendix = False
 
     '''
     Renders an inset. The content of the inset is passed through renderRecursive again.
     '''
     def renderInset(self, depth, data):
+        self.inSubEnvironment = True
         name = "" 
         if "name" in data: name = data.get("name")
         self.appendLine("\\begin{DndComment}{" + name + "}")
         for section in data.get("entries"):
             self.renderRecursive(depth+1, section)
         self.appendLine("\\end{DndComment}\n")
+        self.inSubEnvironment = False
     
     '''
     Renders a read aloud inset. The content of the inset is passed through renderRecursive again.
     '''
     def renderReadAloudInset(self, depth, data):
+        self.inSubEnvironment = True
         name = "" 
         if "name" in data: name = data.get("name")
         self.appendLine("\\begin{DndReadAloud}{" + name + "}")
         for section in data.get("entries"):
             self.renderRecursive(depth+1, section)
         self.appendLine("\\end{DndReadAloud}\n")
+        self.inSubEnvironment = False
 
     '''
     Renders tables. Currently column content is written directly to the lines container without going through the renderer again.
     '''
     def renderTable(self, data):
+        self.inSubEnvironment = True
         titles = data.get("colLabels")
         alignments = data.get("colStyles")
         alignments = " ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c")
         self.appendLine(str("\\begin{DndTable}{" + alignments + "}\n"))
         if (titles): self.appendLine(str(" & ".join(titles) + "\\\\"))
         for row in data.get("rows"):
-            if (isinstance(row, str)): self.appendLine(str(" & ".join(row) + "\\\\"))
+            self.appendLine(str(" & ".join(row) + "\\\\"))
         self.appendLine(str("\\end{DndTable}\n\n"))
+        self.inSubEnvironment = False
 
     '''
     Renders tables. Currently item content is written directly to the lines container without going through the renderer again.
@@ -335,41 +353,52 @@ class TexRenderer:
     Also list styles are currently ignored.
     '''
     def renderList(self, data):
+        self.inSubEnvironment = True
         self.appendLine(str("\\begin{itemize}\n"))
         for item in data.get("items"):
             if (isinstance(item, str)): self.appendLine("\\item " + item)
         self.appendLine(str("\\end{itemize}\n\n"))
+        self.inSubEnvironment = False
 
     '''
     Renders the quote environment.
     '''
     def renderQuote(self, data):
+        self.inSubEnvironment = True
         self.appendLine("\\begingroup\n\\DndSetThemeColor[DmgLavender]\\begin{DndSidebar}{}")
         for line in data.get("entries"):
             self.appendLine(line)
         self.appendLine("\n\\textit{" + data.get("by") + ", " + data.get("from")+"}")
         self.appendLine("\\end{DndSidebar}\n\\endgroup")
+        self.inSubEnvironment = False
 
     '''
     Adds an image. Currently this will not work with remote images (ie. the standard in 5eJSONS - this is the only point where the standard 5eJSON syntax does not work).
     '''
     def renderImage(self, data):
-        '''self.appendLine("\\begingroup\n\\DndSetThemeColor[DmgLavender]\\begin{figure}\n\\centering")
+        '''self.inSubEnvironment = True
+        self.appendLine("\\begingroup\n\\DndSetThemeColor[DmgLavender]\\begin{figure}\n\\centering")
         self.appendLine("\includegraphics[totalheight=8cm]{" + data.get("href").get("url") + "}")
-        self.appendLine("\\end{figure}\n\\endgroup")'''
+        self.appendLine("\\end{figure}\n\\endgroup")
+        self.inSubEnvironment = False'''
         warnings.warn("\nImage rendering currently disabled", category=RuntimeWarning)
+        
 
     def renderStatblock(self, data):
+        self.inSubEnvironment = True
         renderer = TexRenderer.StatBlockRenderer()
         linesToAdd = renderer.renderInlineStatBlock(data)
         for line in linesToAdd:
             self.appendLine(line)
+        self.inSubEnvironment = False
 
     '''
     Adds a simple string to the 'lines' container
     '''
     def renderString(self, line):
+        self.isString = True
         self.appendLine(line + "\n")
+        self.isString = False
 
     '''
     Appends a line to the 'lines' container, deals with in text tags.
@@ -382,6 +411,18 @@ class TexRenderer:
                 line = self.resolveTag(line, tag)
             tags = re.findall(TagPattern, line)
         else:
+            if line.startswith("\\chapter{"): 
+                self.hadChapterHeading = True
+            elif self.hadChapterHeading and self.isString and not self.inSubEnvironment:
+                if not line.startswith("\\"): 
+                    fs = re.compile(r"([^,.]+)")
+                    part = re.compile(r"^(.+)\s(.+)")
+                    fsentence = re.search(fs, line).group(1)
+                    if len(fsentence) > 35: replaceP = re.search(part, fsentence[0:35]).group(1)
+                    else: replaceP = fsentence
+                    new = "\\DndDropCapLine{" + replaceP.replace(replaceP[0], replaceP[0]+"}{", 1) + "}"
+                    line = line.replace(replaceP, new,1)
+                    self.hadChapterHeading = False
             self.lines.append(line)
 
     '''
@@ -406,8 +447,14 @@ class TexRenderer:
             return line.replace(tag, tag.replace("{@code ", "\\texttt{"))
         elif re.findall("{@dice .*?}", tag):
             return line.replace(tag, tag.replace("{@dice ", "\\DndDice{"))
+        elif re.findall("{@damage .*?}", tag):
+            return line.replace(tag, tag.replace("{@damage ", "\\DndDice{"))
+        elif re.findall("{@hit .*?}", tag):
+            return line.replace(tag, tag.replace("{@hit ", "+").replace("}",""))
         elif re.findall("{@skill .*?}", tag):
             return line.replace(tag, tag.replace("{@skill ", "\\textit{"))
+        elif re.findall("{@atk .*?}", tag):
+            return line.replace(tag, tag.replace("{@atk mw,rw}", "\\textsl{Melee or Ranged Weapon Attack:}").replace("{@atk mw}", "\\textsl{Melee Weapon Attack:}").replace("{@atk rw}", "\\textsl{Ranged Weapon Attack:}"))
         else:
             warnings.warn("\nThe following Tag has not yet been implemented: " + tag, category=RuntimeWarning)
             return line.replace(tag, "UNRESOLVED-TAG: (" + tag.replace("{","(").replace("}",")") + ")")
