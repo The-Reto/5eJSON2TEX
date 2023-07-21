@@ -16,6 +16,9 @@ In order to convert the generated Latex file to PDF, you'll need to have both
 - pdflatex
 - the DND 5E Latex Template (https://github.com/rpgtex/DND-5e-LaTeX-Template)
 - Obviously, all relevant Python dependencies
+### How to use
+Change the path in the demo.py file to the JSON you want to convert, run demo.py.
+Some manual editing of the LaTeX-file migth be preferable for optimal PDF outcome, but in general the auto-generated LaTeX is quite good - I'm even surprised by it and I wrote the bloodly converter.
 ## The Project
 ### Why?
 Because I was homebrewing my own adventure (not, yet, public) using the 5e.tools tools and thought it'd be cool to also have my adventure as a PDF.
@@ -26,12 +29,15 @@ The converter can currently convert adventures, in so far as it can display:
 - Text Insets and "Read Aloud" Text Insets 
 - Tables (limited*)
 - Lists (limited*)
+- Statblocks
 
 *: Cells (in tables) or items (in lists) may currently only consist of strings, more involved objects (such as the "item" object for lists), will not work.
 ### Goal
 The end goal is to have a tool that can fully convert 5e.tools compatible JSONs to LaTeX and therefore, PDFs, but that's a long way off.
 A good first step would be if the converter could correctly render the JSON used in the 5e.tools render demo (https://5e.tools/renderdemo.html).
 #### Next steps
-- Stat-blocks
-- More in-text tags
+- More in-text tags (most notably @book and @adventure link-tags)
 - Images
+- Formatted lists
+- more complicated tables (where cell entries may be more than strings)
+- more complicated lists (where entries may be more than strings)
