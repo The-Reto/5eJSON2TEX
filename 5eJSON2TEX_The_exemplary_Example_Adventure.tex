@@ -41,9 +41,11 @@ Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lo
 
 \begingroup
 \DndSetThemeColor[DmgLavender]\begin{DndSidebar}{}
-Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua
-
-\textit{Lorem Ipsum, Duis Autem}
+\Large \centering «
+\large \centering Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua
+\Large »
+ 
+ \normalsize \raggedleft \textit{ - Lorem Ipsum, Duis Autem}
 \end{DndSidebar}
 \endgroup
 \section{with some more headers}
@@ -147,8 +149,13 @@ The Lorem has advantage on saving throws against spells and other magical effect
 \DndMonsterAction{Magic Weapons}
 The Lorem's weapon attacks are magical.
 
-\DndMonsterSection{Spellcasting}
-Spellcasting is NOT CURRENTLY IMPLEMENTED
+\DndMonsterAction{Innate Spellcasting}
+The Lorem's innate spellcasting ability is Charisma (spell save DC 14). The Lorem can innately cast the following spells, requiring no components:
+\\
+At Will: \textit{detect evil and good}, \textit{druidcraft}, \textit{pass without trace}\\
+1 / Day (each): : \textit{calm emotions}, \textit{dispel evil and good}, \textit{entangle}\\
+
+ 
 
 \DndMonsterSection{Actions}
 \DndMonsterAction{Multiattack}
@@ -194,6 +201,29 @@ The Lorem has advantage on saving throws against spells and other magical effect
 \DndMonsterAction{Magic Weapons}
 The Lorem's weapon attacks are magical.
 
+\DndMonsterAction{Spellcasting}
+This is an examlpe header
+\\
+Cantrips: : \textit{fire bolt}\\
+2nd level (4 slots): : \textit{blindness/deafness}\\
+Constant: \textit{animal friendship}\\
+At Will: \textit{aid}\\
+4 / Day: : \textit{acid splash}\\
+2 / Day (each): : \textit{animate objects}\\
+1 / Rest: : \textit{animal friendship}\\
+1 / Week: : \textit{bestow curse}\\
+1 / Year: : \textit{arcane eye}\\
+
+ 
+
+\DndMonsterAction{Innate Spellcasting}
+The unicorn's innate spellcasting ability is Charisma (spell save DC 14). The unicorn can innately cast the following spells, requiring no components:
+\\
+At Will: \textit{detect evil and good}, \textit{druidcraft}, \textit{pass without trace}\\
+1 / Day (each): : \textit{calm emotions}, \textit{dispel evil and good}, \textit{entangle}\\
+
+ 
+
 \DndMonsterSection{Actions}
 \DndMonsterAction{Multiattack}
 The Lorem makes two attacks: one with its hooves and one with its horn.
@@ -223,13 +253,13 @@ The therewolf has advantage on Wisdom (\textit{Perception}) checks that rely on 
 The werewolf makes two attacks: two with its spear (humanoid form) or one with its bite and one with its claws (hybrid form).
 
 \DndMonsterAction{Bite (Wolf or Hybrid Form Only)}
-\textsl{Melee Weapon Attack:} +4 to hit, reach 5 ft., one target. UNRESOLVED-TAG: ((@h))6 (\DndDice{1d8 + 2}) piercing damage. If the target is a humanoid, it must succeed on a UNRESOLVED-TAG: ((@dc 12)) Constitution saving throw or be cursed with werewolf lycanthropy.
+\textsl{Melee Weapon Attack:} +4 to hit, reach 5 ft., one target. \textit{Hit:} 6 (\DndDice{1d8 + 2}) piercing damage. If the target is a humanoid, it must succeed on a DC 12 Constitution saving throw or be cursed with werewolf lycanthropy.
 
 \DndMonsterAction{Claws (Hybrid Form Only)}
-\textsl{Melee Weapon Attack:} +4 to hit, reach 5 ft., one creature. UNRESOLVED-TAG: ((@h))7 (\DndDice{2d4 + 2}) slashing damage.
+\textsl{Melee Weapon Attack:} +4 to hit, reach 5 ft., one creature. \textit{Hit:} 7 (\DndDice{2d4 + 2}) slashing damage.
 
 \DndMonsterAction{Spear (Humanoid Form Only)}
-\textsl{Melee or Ranged Weapon Attack:} +4 to hit, reach 5 ft. or range 20/60 ft., one creature. UNRESOLVED-TAG: ((@h))5 (\DndDice{1d6 + 2}) piercing damage, or 6 (\DndDice{1d8 + 2}) piercing damage if used with two hands to make a melee attack.
+\textsl{Melee or Ranged Weapon Attack:} +4 to hit, reach 5 ft. or range 20/60 ft., one creature. \textit{Hit:} 5 (\DndDice{1d6 + 2}) piercing damage, or 6 (\DndDice{1d8 + 2}) piercing damage if used with two hands to make a melee attack.
 
 \end{multicols}
 \end{DndMonster}

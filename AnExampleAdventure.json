@@ -450,6 +450,76 @@
 										"ac": [
 											12
 										],
+										"spellcasting": [
+											{
+												"name": "Spellcasting",
+												"headerEntries": [
+													"This is an examlpe header"
+												],
+												"spells": {
+													"0": {
+														"spells": [
+															"{@spell fire bolt}"
+														]
+													},
+													"2": {
+														"spells": [
+															"{@spell blindness/deafness}"
+														],
+														"slots": 4
+													}
+												},
+												"constant": [
+													"{@spell animal friendship}"
+												],
+												"will": [
+													"{@spell aid}"
+												],
+												"daily": {
+													"4": [
+														"{@spell acid splash}"
+													],
+													"2e": [
+														"{@spell animate objects}"
+													]
+												},
+												"rest": {
+													"1": [
+														"{@spell animal friendship}"
+													]
+												},
+												"weekly": {
+													"1": [
+														"{@spell bestow curse}"
+													]
+												},
+												"yearly": {
+													"1": [
+														"{@spell arcane eye}"
+													]
+												},
+												"type": "spellcasting"
+											},
+                                            {
+                                                "name": "Innate Spellcasting",
+                                                "headerEntries": [
+                                                    "The unicorn's innate spellcasting ability is Charisma (spell save {@dc 14}). The unicorn can innately cast the following spells, requiring no components:"
+                                                ],
+                                                "will": [
+                                                    "{@spell detect evil and good}",
+                                                    "{@spell druidcraft}",
+                                                    "{@spell pass without trace}"
+                                                ],
+                                                "daily": {
+                                                    "1e": [
+                                                        "{@spell calm emotions}",
+                                                        "{@spell dispel evil and good}",
+                                                        "{@spell entangle}"
+                                                    ]
+                                                },
+                                                "ability": "cha"
+                                            }
+                                        ],
 										"hp": {
 											"average": 67,
 											"formula": "9d10 + 18"
