@@ -24,7 +24,6 @@ class TexRenderer:
             sizes = {"T": "Tiny", "S": "Small", "M": "Medium", "L": "Large", "H": "Huge", "G": "Gargantuan"}
             alignments = {"L": "Lawful", "C": "Chaotic", "N": "Neutral", "G": "Good", "E": "Evil", "T": "True neutral", "U": "Unaligned", "A": "Any alignment"}
             typeStrs = []
-            print(monsterData)
             if "size" in monsterData:
                 for size in monsterData.get("size"):
                     typeStrs.append(sizes.get(size))
@@ -71,8 +70,44 @@ class TexRenderer:
             return ", ".join(speeds)
 
         def renderMonsterSpellcasting(self, monsterData):
-            self.lines.append("\\DndMonsterSection{Spellcasting}")
-            self.lines.append("Spellcasting is NOT CURRENTLY IMPLEMENTED\n")
+            spellData = monsterData.get("spellcasting")
+            for casting in spellData:
+                self.lines.append("\\DndMonsterAction{@NAME}".replace("@NAME",casting.get("name")))
+                if "headerEntries" in casting: self.lines.append("\n".join(casting.get("headerEntries")))
+                self.lines.append("\\\\")
+                if "spells" in casting: self.renderSpellClass(casting.get("spells"), "spells")
+                if "constant" in casting: self.renderSpellCategory(casting.get("constant"), "Constant")
+                if "will" in casting: self.renderSpellCategory(casting.get("will"), "At Will")
+                if "daily" in casting: self.renderSpellClass(casting.get("daily"), "daily")
+                if "rest" in casting: self.renderSpellClass(casting.get("rest"), "rest")
+                if "weekly" in casting: self.renderSpellClass(casting.get("weekly"), "weekly")
+                if "yearly" in casting: self.renderSpellClass(casting.get("yearly"), "yearly")
+                self.lines.append("\n \n")
+
+        def renderSpellLevels(self, spellData):
+            lowLevels = {"0":"Cantrips: ","1":"1st level (@SLOTS slots): ","2":"2nd level (@SLOTS slots): ", "3":"3rd level (@SLOTS slots): "}
+            higherLevels = "@LEVELth level (@SLOTS slots): "
+            for level in spellData.keys():
+                if level in lowLevels: title = lowLevels.get(level)
+                else: title = higherLevels.replace("@LEVEL", level)
+                title = title.replace("@SLOTS", str(spellData.get(level).get("slots")))
+                self.renderSpellCategory(spellData.get(level).get("spells"), title)
+
+        def renderSpellClass(self, spellData, type):
+            perTypes = {"daily":"@AMOUNT / Day: ","rest":"@AMOUNT / Rest: ","weekly":"@AMOUNT / Week: ","yearly":"@AMOUNT / Year: "}
+            if type in perTypes:
+                for amount in spellData.keys():
+                    title = perTypes.get(type).replace("@AMOUNT", amount)
+                    if amount[-1] == "e": 
+                        title = title.replace(amount, amount.replace("e", "")).replace(":", " (each):")
+                    self.renderSpellCategory(spellData.get(amount), title)
+            else:
+                self.renderSpellLevels(spellData)
+
+        def renderSpellCategory(self, spellData, title):
+            spellStrs = spellData
+            self.lines.append(title + ": " + ", ".join(spellStrs) + "\\\\")
+
 
         def renderAC(self, acData):
             ACs = []
@@ -191,7 +226,6 @@ class TexRenderer:
         resolves a single tag in a string
         '''
         def renderTag(self, line, tag):
-            print(line)
             if re.findall("{@b .*?}", tag) or re.findall("{@bold .*?}", tag):
                 return self.renderTextFormatTag(line, tag, "\\textbf{", "{@bold ", "{@b ")
             elif re.findall("{@i .*?}", tag) or re.findall("{@italic .*?}", tag):
@@ -219,14 +253,21 @@ class TexRenderer:
             elif re.findall("{@h}", tag):
                 return line.replace(tag, "\\textit{Hit:} ")
             elif re.findall("{@skill .*?}", tag):
-                return self.renderTextFormatTag(line, tag, "\\textit{", "{@skill ")
+                return self.renderReferenceTag(line ,tag, "{@skill ")
             elif re.findall("{@spell .*?}", tag):
-                return self.renderTextFormatTag(line, tag, "\\textit{", "{@spell ")
+                return self.renderReferenceTag(line ,tag, "{@spell ")
             elif re.findall("{@condition .*?}", tag):
-                return self.renderTextFormatTag(line, tag, "\\textit{", "{@condition ")
+                return self.renderReferenceTag(line ,tag, "{@condition ")
             elif re.findall("{@atk .*?}", tag):
-                line = self.renderAttackTag(line ,tag)
-                return line
+                return self.renderAttackTag(line ,tag)
+            elif re.findall("{@creature .*?}", tag):
+                return self.renderReferenceTag(line ,tag, "{@creature ")
+            elif re.findall("{@item .*?}", tag):
+                return self.renderReferenceTag(line ,tag, "{@item ")
+            elif re.findall("{@class .*?}", tag):
+                return self.renderReferenceTag(line ,tag, "{@class ")
+            elif re.findall("{@vehicle .*?}", tag):
+                return self.renderReferenceTag(line ,tag, "{@vehicle ")
             else:
                 warnings.warn("\nThe following Tag has not yet been implemented: " + tag, category=RuntimeWarning)
                 return line.replace(tag, "UNRESOLVED-TAG: (" + tag.replace("{","(").replace("}",")") + ")")
@@ -240,8 +281,47 @@ class TexRenderer:
         def removeTag(self, line, tag, tagName, replacementStart = "", replacementEnd = ""):
             return line.replace(tag, tag.replace(tagName, replacementStart).replace("}",replacementEnd))
 
+        def renderReferenceTag(self, line, tag, type):
+            if re.findall(type + ".*?\|.*?}", tag):
+                if re.findall(type + ".*?\|\|.*?}", tag):
+                    "Reference with display name, but no source"
+                    displayName = tag.replace(re.findall("(^.*?\|\|)", tag)[0], "").replace("}", "")
+                    actualName = re.findall("( [A-z].*?\|)", tag)[0].replace("|", "")
+                    source = ""
+                elif re.findall("(.*?\|[A-z].*?\|)", tag):
+                    "Reference with display name and source"
+                    displayName = tag.replace(re.findall("(.*?\|[A-z].*?\|)", tag)[0], "").replace("}", "")
+                    actualName = re.findall("( [A-z].*?\|)", tag)[0].replace("|", "")
+                    source = re.findall("(\|[A-z].*?\|)", tag)[0].replace("|", "")
+                elif re.findall("(\|[A-z]*?})", tag):
+                    "Reference with source"
+                    displayName = tag.replace(re.findall("(\|[A-z]*?})", tag)[0], "").replace(type,"")
+                    actualName = displayName.title()
+                    source = re.findall("(\|[A-z]*?})", tag)[0].replace("|", "").replace("}", "")
+                else: 
+                    print("More complicated - SOMETHING IS WRONG")
+                    displayName =  "TOO COMPLICATED REFERENCE TAG"
+                    source = "COULDN'T FIND SOURCE"
+                    actualName = "COULDN'T FIND ACTUAL NAME"
+                return self.renderReference(line, tag, displayName, source, actualName.title())
+            else:
+                return self.renderTextFormatTag(line, tag, "\\textit{", type)
+
+        def renderReference(self, line, tag, displayName, source="", actualName=""):
+            creatureStr = "\\textit{" + displayName + "}"
+            if not source == "" or not actualName == "":
+                creatureStr += "\\footnote{use "
+                if not actualName == "":
+                    creatureStr += actualName
+                else:    
+                    creatureStr += displayName
+                if not source == "":    
+                    creatureStr += " from " + source
+                creatureStr += "}"
+            return line.replace(tag, creatureStr)
+
         def renderDiceTag(self, line, tag):
-            if (re.findall("{@dice [0-9]{1,}?d[0-9]*?}", tag)): return line.replace(tag, tag.replace("{@dice ", "\\DndDice{"))
+            if (re.findall("{@dice [0-9]+d[0-9]?.+}", tag)): return line.replace(tag, tag.replace("{@dice ", "\\DndDice{"))
             else: return line.replace(tag, tag.replace("{@dice ", "").replace("}", ""))
 
         def renderTextFormatTag(self, line, tag, formatStr, tagStart, tagShort = None):
@@ -451,9 +531,10 @@ class TexRenderer:
     def renderQuote(self, data):
         self.inSubEnvironment = True
         self.appendLine("\\begingroup\n\\DndSetThemeColor[DmgLavender]\\begin{DndSidebar}{}")
+        self.appendLine("\\Large \centering «")
         for line in data.get("entries"):
-            self.appendLine(line)
-        self.appendLine("\n\\textit{" + data.get("by") + ", " + data.get("from")+"}")
+            self.appendLine("\\large \centering " + line + "")
+        self.appendLine("\\Large »\n \n \\normalsize \\raggedleft \\textit{ - " + data.get("by") + ", " + data.get("from")+"}")
         self.appendLine("\\end{DndSidebar}\n\\endgroup")
         self.inSubEnvironment = False
 
