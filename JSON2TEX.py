@@ -10,8 +10,7 @@ class TexRenderer:
             self.lines = []
 
         def renderInlineStatBlock(self, monsterData, doubleWidht = False):
-            if doubleWidht: self.lines.append("\\begin{DndMonster}[width=\\textwidth + 8pt]{@MONSTERNAME}\n\\begin{multicols}{2}".replace("@MONSTERNAME", monsterData.get("name")))
-            else: self.lines.append("\\begin{DndMonster}[width=\\textwidth / 2 + 8pt]{@MONSTERNAME}\n\\begin{multicols}{2}".replace("@MONSTERNAME", monsterData.get("name")))
+            self.lines.append("\\begin{DndMonster}[width=\\textwidth @WIDTHMOD + 8pt]{@MONSTERNAME}\n\\begin{multicols}{2}".replace("@MONSTERNAME", monsterData.get("name")))
             self.renderMonsterType(monsterData)
             self.renderMonsterBasics(monsterData)
             self.renderAbilityScores(monsterData)
@@ -336,9 +335,6 @@ class TexRenderer:
             else: return line.replace(tag, tag.replace(tagStart, formatStr))
         
     def __init__(self):
-        self.hadChapterHeading = False
-        self.isString = False
-        self.inSubEnvironment = False
         self.inAppendix = False
         self.f_name = "UnnamedFile"
         self.temp_name = "5eJSON2TEX_UnnamedFile"
@@ -402,8 +398,10 @@ class TexRenderer:
     def writeTex(self, lines):
         subEnvLevel = 0
         passedChapterHeading = False
+        inAppendix = False
         fs = re.compile(r"([^,.]+)")
         part = re.compile(r"^(.+)\s(.+)")
+        wmod = re.compile(r"(@WIDTHMOD)")
         with open(self.temp_name+".tex", 'w') as f:
             for line in lines:
                 finalLine = TexRenderer.InTextTagRenderer.renderLine(line) + "\n"
@@ -413,6 +411,10 @@ class TexRenderer:
                 if line == "@ENDSUBENVIRONMENT": 
                     finalLine = ""
                     subEnvLevel -= 1
+                if re.findall(wmod, finalLine):
+                    if (inAppendix): finalLine = finalLine.replace("@WIDTHMOD", "")
+                    else: finalLine = finalLine.replace("@WIDTHMOD", " / 2 ")
+                    print(finalLine)
                 if passedChapterHeading and not finalLine.startswith("\\") and subEnvLevel == 0 and re.match(fs, finalLine):
                     fsentence = re.search(fs, finalLine).group(1)
                     if len(fsentence) > 35: replaceP = re.search(part, fsentence[0:35]).group(1)
@@ -420,7 +422,11 @@ class TexRenderer:
                     new = "\\DndDropCapLine{" + replaceP.replace(replaceP[0], replaceP[0]+"}{", 1) + "}"
                     finalLine = finalLine.replace(replaceP, new,1)
                     passedChapterHeading = False
-                if finalLine.startswith("\\chapter{"): passedChapterHeading = True
+                if finalLine.startswith("\\chapter{"): 
+                    if finalLine.startswith("\\chapter{Appendix}"): inAppendix = True
+                    else: 
+                        inAppendix = False
+                        passedChapterHeading = True
                 f.write(finalLine)
 
     '''
@@ -434,6 +440,7 @@ class TexRenderer:
         os.system("mv "+self.temp_name+".tex "+self.f_name+".tex")
         os.system("mv "+self.temp_name+".pdf "+self.f_name+".pdf")
         os.system("rm "+self.temp_name+"*")
+        os.system("rm -r JSON2TEX_img")
         print("Done!")
 
     '''
@@ -471,7 +478,7 @@ class TexRenderer:
         elif data.get("type") == "quote":
             lines += TexRenderer.renderQuote(data)
         elif data.get("type") == "image":
-            lines += self.renderImage(data)
+            lines += TexRenderer.renderImage(data)
         elif data.get("type") == "statblockInline":
             lines += self.renderStatblock(data)
         elif data.get("type") == "statblock":
@@ -492,18 +499,13 @@ class TexRenderer:
         "\\paragraph{",
         "\\subparagraph{"
         ]
-        triggerAppendix = False
         lines = []
         if "name" in data:
             if data.get("name") == "Appendix":
-                self.inAppendix = True
-                triggerAppendix = True
                 lines += ["\\onecolumn"]
             lines += [str(titles[depth] + data.get("name") + "}\n")]
         for section in data.get("entries"):
             lines += self.renderRecursive(depth+1, section)
-        if self.inAppendix and triggerAppendix:
-            self.inAppendix = False
         return lines
 
     '''
@@ -582,14 +584,15 @@ class TexRenderer:
     '''
     Adds an image. Currently this will not work with remote images (ie. the standard in 5eJSONS - this is the only point where the standard 5eJSON syntax does not work).
     '''
-    def renderImage(self, data):
+    def renderImage(data):
         lines = ["@STARTSUBENVIRONMENT"]
         if data.get("href").get("type") == "external":
             try:
                 import requests
                 image_url = data.get("href").get("url")
                 r = requests.get(image_url)
-                file_name = self.temp_name + str(hash(image_url))+".png"
+                os.system("mkdir ./JSON2TEX_img")
+                file_name = "./JSON2TEX_img/" + str(hash(image_url))+".png"
                 with open(file_name,'wb') as f:
                     f.write(r.content)
                 lines += ["\\begingroup\n\\DndSetThemeColor[DmgLavender]\\begin{figure}[H]\n\\centering"]
@@ -612,13 +615,13 @@ class TexRenderer:
     def renderStatblock(self, data):
         renderer = TexRenderer.StatBlockRenderer()
         linesToAdd = ["@STARTSUBENVIRONMENT"]
-        if data.get("type") == "statblockInline": linesToAdd += renderer.renderInlineStatBlock(data.get("data"), self.inAppendix)
+        if data.get("type") == "statblockInline": linesToAdd += renderer.renderInlineStatBlock(data.get("data"))
         elif data.get("type") == "statblock":
             monsterData = self.jsonData.get("monster")
             monsterFound = False
             for monster in monsterData:
                 if monster.get("name") == data.get("name"): 
-                    linesToAdd += renderer.renderInlineStatBlock(monster, self.inAppendix)
+                    linesToAdd += renderer.renderInlineStatBlock(monster)
                     monsterFound = True
             if not monsterFound: linesToAdd += ["Monster @MONSTERNAME not found in this source".replace("@MONSTERNAME", data.get("name"))]
         linesToAdd += ["@ENDSUBENVIRONMENT"]
