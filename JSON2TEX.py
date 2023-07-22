@@ -108,7 +108,6 @@ class TexRenderer:
             spellStrs = spellData
             self.lines.append(title + ": " + ", ".join(spellStrs) + "\\\\")
 
-
         def renderAC(self, acData):
             ACs = []
             for ac in acData:
