@@ -3,6 +3,9 @@
 \usepackage{tabulary}
 \usepackage[normalem]{ulem}
 \usepackage{color,soul}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{wrapfig}
 \title{The exemplary Example Adventure \\ \large 5eJSON2TEX}
 \author{The Reto}
 \DndSetThemeColor[PhbMauve]
@@ -137,12 +140,13 @@ Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
 
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero!
 
-\begin{DndMonster}[width=\textwidth / 2 + 8pt]{Lorem Ipsum}
-\begin{multicols}{2}
+\begin{DndMonster}[width=\textwidth  / 2  + 8pt]{Lorem Ipsum}
+
 \DndMonsterType{Large Celestial, Lawful Good}
 \DndMonsterBasics[armor-class = {12 ( horn armor), 10 ( natural armor) when de-horned}, hit-points  = {\DndDice{9d10 + 18}}, speed = {walk 50 ft., fly 30 ft. (when thrown)}]
 \DndMonsterAbilityScores[str = 18,dex = 14,con = 15,int = 11,wis = 17,cha = 16]
 \DndMonsterDetails[saving-throws = {\textit{Str} +5 and \textit{Dex} +3}, skills = {\textit{Athletics} +7, \textit{Deception} +7 and \textit{Insight} +5}, damage-vulnerabilities = { force, necrotic and slashing  and  acid when horned}, damage-resistances = { cold and poison }, damage-immunities = {poison}, condition-immunities = {charmed, paralyzed and poisoned}, senses = {darkvision 60 ft. and Passive Perception 13}, languages = {Celestial and Elvish}, challenge = {5}]
+\begin{multicols}{2}
 \DndMonsterAction{Magic Resistance}
 The Lorem has advantage on saving throws against spells and other magical effects.
 
@@ -175,13 +179,14 @@ The Lorem makes one attack with its hooves.
 The Lorem creates a shimmering, magical field around itself or another creature it can see within 60 feet of it. The target gains a +2 bonus to AC until the end of the Lorem's next turn.
 
 \end{multicols}
+
 \end{DndMonster}
 \onecolumn
 \chapter{Appendix}
 
 \section{because Appendix is rendered differently from other chapters}
 
-\DndDropCapLine{L}{orem ipsum dolor sit amet}, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
 Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
 
@@ -189,12 +194,13 @@ Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie co
 
 Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
 
-\begin{DndMonster}[width=\textwidth + 8pt]{Dolor}
-\begin{multicols}{2}
+\begin{DndMonster}[width=\textwidth  + 8pt]{Dolor}
+
 \DndMonsterType{Tiny Beast, True neutral}
 \DndMonsterBasics[armor-class = {12}, hit-points  = {\DndDice{9d10 + 18}}, speed = {walk 20 ft.}]
 \DndMonsterAbilityScores[str = 5,dex = 4,con = 12,int = 11,wis = 13,cha = 9]
 \DndMonsterDetails[saving-throws = {\textit{Str} +5 and \textit{Dex} +3}, skills = {\textit{Athletics} +7, \textit{Deception} +7 and \textit{Insight} +5}, damage-vulnerabilities = {force, necrotic and slashing}, damage-resistances = {cold and poison}, damage-immunities = {poison}, senses = {darkvision 60 ft. and Passive Perception 13}, languages = {Celestial and Elvish}, challenge = {5}]
+\begin{multicols}{2}
 \DndMonsterAction{Magic Resistance}
 The Lorem has advantage on saving throws against spells and other magical effects.
 
@@ -232,13 +238,15 @@ The Lorem makes two attacks: one with its hooves and one with its horn.
 \textsl{Melee Weapon Attack:} +7 to hit, reach 5 ft., one target. Hit: \DndDice{1d8 + 4} piercing damage.
 
 \end{multicols}
+
 \end{DndMonster}
-\begin{DndMonster}[width=\textwidth + 8pt]{Therewolf}
-\begin{multicols}{2}
+\begin{DndMonster}[width=\textwidth  + 8pt]{Therewolf}
+
 \DndMonsterType{Medium Humanoid (human, shapechanger), Chaotic Evil}
 \DndMonsterBasics[armor-class = {11 in humanoid form, 12 ( natural armor) in wolf or hybrid form}, hit-points  = {\DndDice{6d8 + 12}}, speed = {walk 30 ft. (40 ft. in wolf form)}]
 \DndMonsterAbilityScores[str = 15,dex = 13,con = 14,int = 10,wis = 11,cha = 10]
 \DndMonsterDetails[skills = {\textit{Perception} +4}, languages = {Common (can't speak in wolf form)}, challenge = {3}]
+\begin{multicols}{2}
 \DndMonsterAction{Shapechanger}
 The therewolf can use its action to polymorph into a wolf-humanoid hybrid or into a wolf, or back into its true form, which is humanoid.
 
@@ -262,5 +270,6 @@ The werewolf makes two attacks: two with its spear (humanoid form) or one with i
 \textsl{Melee or Ranged Weapon Attack:} +4 to hit, reach 5 ft. or range 20/60 ft., one creature. \textit{Hit:} 5 (\DndDice{1d6 + 2}) piercing damage, or 6 (\DndDice{1d8 + 2}) piercing damage if used with two hands to make a melee attack.
 
 \end{multicols}
+
 \end{DndMonster}
 \end{document}

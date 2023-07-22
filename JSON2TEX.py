@@ -8,16 +8,24 @@ class TexRenderer:
     class StatBlockRenderer:
         def __init__(self):
             self.lines = []
-
         def renderInlineStatBlock(self, monsterData, doubleWidht = False):
-            self.lines.append("\\begin{DndMonster}[width=\\textwidth @WIDTHMOD + 8pt]{@MONSTERNAME}\n\\begin{multicols}{2}".replace("@MONSTERNAME", monsterData.get("name")))
+            self.lines.append("\\begin{DndMonster}[width=\\textwidth @WIDTHMOD + 8pt]{@MONSTERNAME}\n".replace("@MONSTERNAME", monsterData.get("name")))
             self.renderMonsterType(monsterData)
             self.renderMonsterBasics(monsterData)
             self.renderAbilityScores(monsterData)
             self.renderMonsterDetails(monsterData)
+            self.lines.append("\\begin{multicols}{2}")
             self.renderMonsterActions(monsterData)
-            self.lines.append("\\end{multicols}\n\\end{DndMonster}")
+            self.lines.append("\\end{multicols}")
+            self.renderMonsterFluff(monsterData)
+            self.lines.append("\n\\end{DndMonster}")
             return self.lines
+
+        def renderMonsterFluff(self, monsterData):
+            if "fluff" in monsterData:
+                if "entries" in monsterData.get("fluff"): 
+                    self.lines.append("\\DndMonsterSection{Info}\n")
+                    self.lines.extend(monsterData.get("fluff").get("entries"))
 
         def renderMonsterType(self, monsterData):
             sizes = {"T": "Tiny", "S": "Small", "M": "Medium", "L": "Large", "H": "Huge", "G": "Gargantuan"}
@@ -370,6 +378,7 @@ class TexRenderer:
 \\usepackage{color,soul}
 \\usepackage{float}
 \\usepackage{caption}
+\\usepackage{wrapfig}
 \\title{@DOCUMENT_TITLE \\\\ \\large @DOCUMENT_SUBTITLE}
 \\author{@AUTHORS}
 \\DndSetThemeColor[PhbMauve]
