@@ -344,6 +344,8 @@ class TexRenderer:
     def renderAdventure(self, JSONPath):
         with open(JSONPath) as file:
             self.jsonData = json.load(file)
+        self.f_name = "_".join([self.jsonData.get("adventure")[0].get("storyline").replace(" ", "_"), self.jsonData.get("adventure")[0].get("name").replace(" ", "_")])
+        self.temp_name = "_".join(["5eJSON2TEX",self.f_name])
         self.setUpDocument(self.jsonData.get("_meta"), self.jsonData.get("adventure")[0])
         self.renderContent(self.jsonData.get("adventureData")[0].get("data"))
         self.closeDocument()
@@ -361,6 +363,8 @@ class TexRenderer:
 \\usepackage{tabulary}
 \\usepackage[normalem]{ulem}
 \\usepackage{color,soul}
+\\usepackage{float}
+\\usepackage{caption}
 \\title{@DOCUMENT_TITLE \\\\ \\large @DOCUMENT_SUBTITLE}
 \\author{@AUTHORS}
 \\DndSetThemeColor[PhbMauve]
@@ -387,8 +391,6 @@ class TexRenderer:
         adventureData: 'adventure' object from the JSON file, as a dict
     '''
     def writeTex(self, adventureData):
-        self.f_name = "_".join([adventureData.get("storyline").replace(" ", "_"), adventureData.get("name").replace(" ", "_")])
-        self.temp_name = "_".join(["5eJSON2TEX",self.f_name])
         with open(self.temp_name+".tex", 'w') as f:
             f.write('\n'.join(self.lines))
 
@@ -402,7 +404,7 @@ class TexRenderer:
         print("Cleaning up output files...")
         os.system("mv "+self.temp_name+".tex "+self.f_name+".tex")
         os.system("mv "+self.temp_name+".pdf "+self.f_name+".pdf")
-        os.system("rm "+self.temp_name+".*")
+        os.system("rm "+self.temp_name+"*")
         print("Done!")
 
     '''
@@ -541,12 +543,27 @@ class TexRenderer:
     Adds an image. Currently this will not work with remote images (ie. the standard in 5eJSONS - this is the only point where the standard 5eJSON syntax does not work).
     '''
     def renderImage(self, data):
-        '''self.inSubEnvironment = True
-        self.appendLine("\\begingroup\n\\DndSetThemeColor[DmgLavender]\\begin{figure}\n\\centering")
-        self.appendLine("\includegraphics[totalheight=8cm]{" + data.get("href").get("url") + "}")
-        self.appendLine("\\end{figure}\n\\endgroup")
-        self.inSubEnvironment = False'''
-        warnings.warn("\nImage rendering currently disabled", category=RuntimeWarning)
+        if data.get("href").get("type") == "external":
+            try:
+                import requests
+                image_url = data.get("href").get("url")
+                r = requests.get(image_url)
+                file_name = self.temp_name + str(hash(image_url))+".png"
+                with open(file_name,'wb') as f:
+                    f.write(r.content)
+                self.inSubEnvironment = True
+                self.appendLine("\\begingroup\n\\DndSetThemeColor[DmgLavender]\\begin{figure}[H]\n\\centering")
+                self.appendLine("\includegraphics[width = 0.8 \\textwidth]{" + file_name + "}")
+                if "title" in data or "credit" in data: 
+                    caption = []
+                    if "title" in data: caption.append(data.get("title"))
+                    if "credit" in data: caption.append("\\textit{" + data.get("credit") + "}")
+                    self.appendLine("\caption*{" + "\\\\ \\footnotesize Source: ".join(caption) + "}")
+                self.appendLine("\\end{figure}\n\\endgroup")
+                self.inSubEnvironment = False
+            except:
+                warnings.warn("\nSomething went wrong when rendering the image", category=RuntimeWarning)
+        else: warnings.warn("\nImage rendering for 'internal' type not implemented", category=RuntimeWarning)
 
     '''
     Renders statblocks
