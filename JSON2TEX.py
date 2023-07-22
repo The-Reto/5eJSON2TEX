@@ -212,75 +212,80 @@ class TexRenderer:
         '''
         Resolves all tags in a string
         '''
-        def renderLine(self, line):
+        @staticmethod
+        def renderLine(line):
             TagPattern = "\{@.*?\}"
             tags = re.findall(TagPattern, line)
             while tags:
                 for tag in tags:
-                    line = self.renderTag(line, tag)
+                    line = TexRenderer.InTextTagRenderer.renderTag(line, tag)
                 tags = re.findall(TagPattern, line)
             return line
 
         '''
         resolves a single tag in a string
         '''
-        def renderTag(self, line, tag):
+        @staticmethod
+        def renderTag(line, tag):
             if re.findall("{@b .*?}", tag) or re.findall("{@bold .*?}", tag):
-                return self.renderTextFormatTag(line, tag, "\\textbf{", "{@bold ", "{@b ")
+                return TexRenderer.InTextTagRenderer.renderTextFormatTag(line, tag, "\\textbf{", "{@bold ", "{@b ")
             elif re.findall("{@i .*?}", tag) or re.findall("{@italic .*?}", tag):
-                return self.renderTextFormatTag(line, tag, "\\textit{", "{@italic ", "{@i ")
+                return TexRenderer.InTextTagRenderer.renderTextFormatTag(line, tag, "\\textit{", "{@italic ", "{@i ")
             elif re.findall("{@u .*?}", tag) or re.findall("{@underline .*?}", tag):
-                return self.renderTextFormatTag(line, tag, "\\underline{", "{@underline ", "{@u ")
+                return TexRenderer.InTextTagRenderer.renderTextFormatTag(line, tag, "\\underline{", "{@underline ", "{@u ")
             elif re.findall("{@s .*?}", tag) or re.findall("{@strike .*?}", tag):
-                return self.renderTextFormatTag(line, tag, "\\sout{", "{@strike ", "{@s ")
+                return TexRenderer.InTextTagRenderer.renderTextFormatTag(line, tag, "\\sout{", "{@strike ", "{@s ")
             elif re.findall("{@highlight .*?}", tag):
-                return self.renderTextFormatTag(line, tag, "\\hl{", "{@highlight ")
+                return TexRenderer.InTextTagRenderer.renderTextFormatTag(line, tag, "\\hl{", "{@highlight ")
             elif re.findall("{@sub .*?}", tag):
-                return self.renderTextFormatTag(line, tag, "\\textsubscript{", "{@sub ")
+                return TexRenderer.InTextTagRenderer.renderTextFormatTag(line, tag, "\\textsubscript{", "{@sub ")
             elif re.findall("{@sup .*?}", tag):
-                return self.renderTextFormatTag(line, tag, "\\textsuperscript{", "{@sup ")
+                return TexRenderer.InTextTagRenderer.renderTextFormatTag(line, tag, "\\textsuperscript{", "{@sup ")
             elif re.findall("{@code .*?}", tag):
-                return self.renderTextFormatTag(line, tag, "\\texttt{", "{@code ")
+                return TexRenderer.InTextTagRenderer.renderTextFormatTag(line, tag, "\\texttt{", "{@code ")
             elif re.findall("{@dice .*?}", tag):
-                return self.renderDiceTag(line, tag)
+                return TexRenderer.InTextTagRenderer.renderDiceTag(line, tag)
             elif re.findall("{@damage .*?}", tag):
-                return self.renderDiceTag(line.replace("{@damage ", "{@dice "), tag.replace("{@damage ", "{@dice "))
+                return TexRenderer.InTextTagRenderer.renderDiceTag(line.replace("{@damage ", "{@dice "), tag.replace("{@damage ", "{@dice "))
             elif re.findall("{@hit .*?}", tag):
-                return self.removeTag(line, tag, "{@hit ", "+")
+                return TexRenderer.InTextTagRenderer.removeTag(line, tag, "{@hit ", "+")
             elif re.findall("{@dc .*?}", tag):
-                return self.removeTag(line, tag, "{@dc ", "DC ")
+                return TexRenderer.InTextTagRenderer.removeTag(line, tag, "{@dc ", "DC ")
             elif re.findall("{@h}", tag):
                 return line.replace(tag, "\\textit{Hit:} ")
             elif re.findall("{@skill .*?}", tag):
-                return self.renderReferenceTag(line ,tag, "{@skill ")
+                return TexRenderer.InTextTagRenderer.renderReferenceTag(line ,tag, "{@skill ")
             elif re.findall("{@spell .*?}", tag):
-                return self.renderReferenceTag(line ,tag, "{@spell ")
+                return TexRenderer.InTextTagRenderer.renderReferenceTag(line ,tag, "{@spell ")
             elif re.findall("{@condition .*?}", tag):
-                return self.renderReferenceTag(line ,tag, "{@condition ")
+                return TexRenderer.InTextTagRenderer.renderReferenceTag(line ,tag, "{@condition ")
             elif re.findall("{@atk .*?}", tag):
-                return self.renderAttackTag(line ,tag)
+                return TexRenderer.InTextTagRenderer.renderAttackTag(line ,tag)
             elif re.findall("{@creature .*?}", tag):
-                return self.renderReferenceTag(line ,tag, "{@creature ")
+                return TexRenderer.InTextTagRenderer.renderReferenceTag(line ,tag, "{@creature ")
             elif re.findall("{@item .*?}", tag):
-                return self.renderReferenceTag(line ,tag, "{@item ")
+                return TexRenderer.InTextTagRenderer.renderReferenceTag(line ,tag, "{@item ")
             elif re.findall("{@class .*?}", tag):
-                return self.renderReferenceTag(line ,tag, "{@class ")
+                return TexRenderer.InTextTagRenderer.renderReferenceTag(line ,tag, "{@class ")
             elif re.findall("{@vehicle .*?}", tag):
-                return self.renderReferenceTag(line ,tag, "{@vehicle ")
+                return TexRenderer.InTextTagRenderer.renderReferenceTag(line ,tag, "{@vehicle ")
             else:
                 warnings.warn("\nThe following Tag has not yet been implemented: " + tag, category=RuntimeWarning)
                 return line.replace(tag, "UNRESOLVED-TAG: (" + tag.replace("{","(").replace("}",")") + ")")
 
-        def renderAttackTag(self, line, tag):
+        @staticmethod
+        def renderAttackTag(line, tag):
             if tag == "{@atk mw,rw}": tagStr = "\\textsl{Melee or Ranged Weapon Attack:}"
             if tag == "{@atk rw}": tagStr =  "\\textsl{Ranged Weapon Attack:}"
             if tag == "{@atk mw}": tagStr =  "\\textsl{Melee Weapon Attack:}"
             return line.replace(tag, tagStr)
 
-        def removeTag(self, line, tag, tagName, replacementStart = "", replacementEnd = ""):
+        @staticmethod
+        def removeTag(line, tag, tagName, replacementStart = "", replacementEnd = ""):
             return line.replace(tag, tag.replace(tagName, replacementStart).replace("}",replacementEnd))
 
-        def renderReferenceTag(self, line, tag, type):
+        @staticmethod
+        def renderReferenceTag(line, tag, type):
             if re.findall(type + ".*?\|.*?}", tag):
                 if re.findall(type + ".*?\|\|.*?}", tag):
                     "Reference with display name, but no source"
@@ -302,11 +307,12 @@ class TexRenderer:
                     displayName =  "TOO COMPLICATED REFERENCE TAG"
                     source = "COULDN'T FIND SOURCE"
                     actualName = "COULDN'T FIND ACTUAL NAME"
-                return self.renderReference(line, tag, displayName, source, actualName.title())
+                return TexRenderer.InTextTagRenderer.renderReference(line, tag, displayName, source, actualName.title())
             else:
-                return self.renderTextFormatTag(line, tag, "\\textit{", type)
+                return TexRenderer.InTextTagRenderer.renderTextFormatTag(line, tag, "\\textit{", type)
 
-        def renderReference(self, line, tag, displayName, source="", actualName=""):
+        @staticmethod
+        def renderReference(line, tag, displayName, source="", actualName=""):
             creatureStr = "\\textit{" + displayName + "}"
             if not source == "" or not actualName == "":
                 creatureStr += "\\footnote{use "
@@ -319,11 +325,13 @@ class TexRenderer:
                 creatureStr += "}"
             return line.replace(tag, creatureStr)
 
-        def renderDiceTag(self, line, tag):
+        @staticmethod
+        def renderDiceTag(line, tag):
             if (re.findall("{@dice [0-9]+d[0-9]?.+}", tag)): return line.replace(tag, tag.replace("{@dice ", "\\DndDice{"))
             else: return line.replace(tag, tag.replace("{@dice ", "").replace("}", ""))
 
-        def renderTextFormatTag(self, line, tag, formatStr, tagStart, tagShort = None):
+        @staticmethod
+        def renderTextFormatTag(line, tag, formatStr, tagStart, tagShort = None):
             if tagShort: return line.replace(tag, tag.replace(tagStart, tagShort).replace(tagShort, formatStr))
             else: return line.replace(tag, tag.replace(tagStart, formatStr))
         
@@ -392,14 +400,13 @@ class TexRenderer:
         adventureData: 'adventure' object from the JSON file, as a dict
     '''
     def writeTex(self, lines):
-        tagRenderer = TexRenderer.InTextTagRenderer()
         subEnvLevel = 0
         passedChapterHeading = False
         fs = re.compile(r"([^,.]+)")
         part = re.compile(r"^(.+)\s(.+)")
         with open(self.temp_name+".tex", 'w') as f:
             for line in lines:
-                finalLine = tagRenderer.renderLine(line) + "\n"
+                finalLine = TexRenderer.InTextTagRenderer.renderLine(line) + "\n"
                 if line == "@STARTSUBENVIRONMENT": 
                     finalLine = ""
                     subEnvLevel += 1
