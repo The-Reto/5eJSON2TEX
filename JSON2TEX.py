@@ -9,7 +9,7 @@ class TexRenderer:
         def __init__(self):
             self.lines = []
         def renderInlineStatBlock(self, monsterData, doubleWidht = False):
-            self.lines.append("\\begin{DndMonster}[width=\\textwidth @WIDTHMOD + 8pt]{@MONSTERNAME}\n".replace("@MONSTERNAME", monsterData.get("name")))
+            self.lines.append("\\begin{DndMonster}[width=\\textwidth @WIDTHMOD + 8pt]{@MONSTERNAME}".replace("@MONSTERNAME", monsterData.get("name")))
             self.renderMonsterType(monsterData)
             self.renderMonsterBasics(monsterData)
             self.renderAbilityScores(monsterData)
@@ -276,6 +276,10 @@ class TexRenderer:
                 return TexRenderer.InTextTagRenderer.renderReferenceTag(line ,tag, "{@class ")
             elif re.findall("{@vehicle .*?}", tag):
                 return TexRenderer.InTextTagRenderer.renderReferenceTag(line ,tag, "{@vehicle ")
+            elif re.findall("{@adventure .*?}", tag):
+                return TexRenderer.InTextTagRenderer.renderBookTag(line ,tag, "{@adventure ")
+            elif re.findall("{@book .*?}", tag):
+                return TexRenderer.InTextTagRenderer.renderBookTag(line ,tag, "{@book ")
             else:
                 warnings.warn("\nThe following Tag has not yet been implemented: " + tag, category=RuntimeWarning)
                 return line.replace(tag, "UNRESOLVED-TAG: (" + tag.replace("{","(").replace("}",")") + ")")
@@ -290,6 +294,22 @@ class TexRenderer:
         @staticmethod
         def removeTag(line, tag, tagName, replacementStart = "", replacementEnd = ""):
             return line.replace(tag, tag.replace(tagName, replacementStart).replace("}",replacementEnd))
+
+        @staticmethod
+        def renderBookTag(line, tag, type):
+            if type == "{@adventure ":
+                displayText = re.findall("( [A-z].*?\|)", tag)[0].replace("|", "")
+                reference = tag.replace(re.findall("(.*?\|[A-z].*?\|[0-9]\|)", tag)[0], "").replace("}", "")
+                reference = reference.replace(" ", "_")
+                replacement = "\hyperref[sec:@REF]{\\dotuline{@TEXT}}".replace("@REF", reference).replace("@TEXT", displayText)
+                return line.replace(tag, replacement)
+            ""
+            if type == "{@book ":
+                displayText = re.findall("( [A-z].*?\|)", tag)[0].replace("|", "")
+                reference = re.findall("(\|[A-z]+?\|)", tag)[0].replace("|", "")
+                chapter = re.findall("(\|[0-9]+?\|)", tag)[0].replace("|", "")
+                replacement = "@TEXT\\footnote{see: @REF chapter @CHAP}".replace("@TEXT", displayText).replace("@REF", reference).replace("@CHAP", chapter)
+                return line.replace(tag, replacement)
 
         @staticmethod
         def renderReferenceTag(line, tag, type):
@@ -314,7 +334,8 @@ class TexRenderer:
                     displayName =  "TOO COMPLICATED REFERENCE TAG"
                     source = "COULDN'T FIND SOURCE"
                     actualName = "COULDN'T FIND ACTUAL NAME"
-                return TexRenderer.InTextTagRenderer.renderReference(line, tag, displayName, source, actualName.title())
+                actualName = actualName.title()
+                return TexRenderer.InTextTagRenderer.renderReference(line, tag, displayName, source, actualName)
             else:
                 return TexRenderer.InTextTagRenderer.renderTextFormatTag(line, tag, "\\textit{", type)
 
@@ -379,6 +400,8 @@ class TexRenderer:
 \\usepackage{float}
 \\usepackage{caption}
 \\usepackage{wrapfig}
+\\usepackage[normalem]{ulem}
+\\usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref}
 \\title{@DOCUMENT_TITLE \\\\ \\large @DOCUMENT_SUBTITLE}
 \\author{@AUTHORS}
 \\DndSetThemeColor[PhbMauve]
@@ -512,7 +535,7 @@ class TexRenderer:
         if "name" in data:
             if data.get("name") == "Appendix":
                 lines += ["\\onecolumn"]
-            lines += [str(titles[depth] + data.get("name") + "}\n")]
+            lines += [str(titles[depth] + data.get("name") + "} \\label{sec:" + data.get("name").replace(" ", "_") + "}")]
         for section in data.get("entries"):
             lines += self.renderRecursive(depth+1, section)
         return lines
