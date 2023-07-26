@@ -500,11 +500,13 @@ class TexRenderer:
             self.SubenvLvl += 1
             titles = data.get("colLabels")
             alignments = data.get("colStyles")
-            alignments = " ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c") #"c " * len(alignments)#
+            alignments = "X " * len(alignments)# #" ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c")
             if "caption" in data: lines += [str("\\begin{DndTable}[header=@CAPTION]{".replace("@CAPTION", data.get("caption")) + alignments + "}\n")]
             else: lines += ["\\begin{DndTable}{" + alignments + "}\n"]
             if (titles): lines += [str(" & ".join(titles) + "\\\\")]
             for row in data.get("rows"):
+                if isinstance(row, list): row = [self.renderRecursive(4, cell)[0] for cell in row]
+                elif isinstance(row, dict): row = self.renderRecursive(4, row)
                 lines += [" & ".join(row) + "\\\\"]
             lines += [str("\\end{DndTable}\n\n")]
             self.SubenvLvl -= 1
@@ -642,7 +644,9 @@ class TexRenderer:
             if isinstance(data, str):
                 if self.passedChapterHeading and self.SubenvLvl == 0 and not self.inAppendix:
                     data = self.addDropCap(data)
-                lines += [data.replace("&", "\\&") + "\n"]
+                lines += [data.replace("&", "\\&") ]
+            elif isinstance(data, int):
+                return self.renderRecursive(depth, str(data))
             elif data.get("type") == "section" or data.get("type") == "entries":
                 lines += self.renderSection(depth, data)
             elif data.get("type") == "inset":
@@ -661,7 +665,10 @@ class TexRenderer:
                 lines += self.renderStatblock(data)
             elif data.get("type") == "statblock":
                 lines += self.renderStatblock(data)
+            elif data.get("type") == "row":
+                lines.extend(data.get("row"))
             else:
+                lines += ["NOT RENDERABLE TYPE: " + data.get("type")]
                 warnings.warn("\nThe following type of JSON-Entry has not yet been implemented: " + data.get("type") + "\nThe entry will be skipped!", category=RuntimeWarning)
             return lines
 
