@@ -495,6 +495,19 @@ class TexRenderer:
                 lines += self.renderRecursive(depth+1, section)
             return lines
 
+        @staticmethod
+        def getAlignmentsStr(alignments):
+            alignKey = {"text-align-left":"X", "text-align-center":"c"}
+            out = []
+            for alignment in alignments:
+                if alignment in alignKey: out.append(alignKey.get(alignment))
+                elif alignment.startswith("col-"): 
+                    width = float(alignment.replace("col-", "").replace(" text-center", "")) / 12
+                    alignStr = ">{\hsize=@WIDTH\hsize}X".replace("@WIDTH", "%.3f" % width)
+                    if alignment.endswith(" text-center"): alignStr = alignStr.replace("X", "c")
+                    out.append(alignStr)
+                else: out.append("X")
+            return " ".join(out)
         '''
         Renders tables. Currently column content is written directly to the lines container without going through the renderer again.
         '''
@@ -502,10 +515,10 @@ class TexRenderer:
             lines = []
             self.SubenvLvl += 1
             titles = data.get("colLabels")
-            alignments = data.get("colStyles")
-            alignments = "X " * len(alignments)# TODO #" ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c")
-            if "caption" in data: lines += [str("\\begin{DndTable}[header=@CAPTION]{".replace("@CAPTION", data.get("caption")) + alignments + "}\n")]
-            else: lines += ["\\begin{DndTable}{" + alignments + "}\n"]
+            alignmentStr = self.getAlignmentsStr(data.get("colStyles"))
+            print(alignmentStr)
+            if "caption" in data: lines += [str("\\begin{DndTable}[header=@CAPTION]{ ".replace("@CAPTION", data.get("caption")) + alignmentStr + " }\n")]
+            else: lines += ["\\begin{DndTable}{" + alignmentStr + "}\n"]
             if (titles): lines += [str(" & ".join(titles) + "\\\\")]
             for row in data.get("rows"):
                 if isinstance(row, list): row = [self.renderRecursive(4, cell)[0] for cell in row]
