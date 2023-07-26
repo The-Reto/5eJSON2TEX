@@ -215,6 +215,7 @@ class TexRenderer:
                 for entry in trait.get("entries"):
                     self.lines.append(entry + "\n")
 
+
     class InTextTagRenderer:
         '''
         Resolves all tags in a string
@@ -362,37 +363,20 @@ class TexRenderer:
         def renderTextFormatTag(line, tag, formatStr, tagStart, tagShort = None):
             if tagShort: return line.replace(tag, tag.replace(tagStart, tagShort).replace(tagShort, formatStr))
             else: return line.replace(tag, tag.replace(tagStart, formatStr))
-        
-    def __init__(self):
-        self.inAppendix = False
-        self.f_name = "UnnamedFile"
-        self.temp_name = "5eJSON2TEX_UnnamedFile"
 
-    '''
-    Main routine. Renders a 5e.tools compatible JSON into a PDF using LaTex
-    Inputs:
-        JSONPath: Path to JSON File, as a str
-    '''
-    def renderAdventure(self, JSONPath):
-        lines = []
-        with open(JSONPath) as file:
-            self.jsonData = json.load(file)
-        self.f_name = self.jsonData.get("adventure")[0].get("name").replace(" ", "_")
-        if "storyline" in self.jsonData.get("adventure")[0]: self.f_name = self.jsonData.get("adventure")[0].get("storyline").replace(" ", "_") + "_" + self.f_name
-        self.temp_name = "_".join(["5eJSON2TEX",self.f_name])
-        lines += TexRenderer.setUpDocument(self.jsonData.get("_meta"), self.jsonData.get("adventure")[0])
-        lines += self.renderContent(self.jsonData.get("adventureData")[0].get("data"))
-        lines += TexRenderer.closeDocument()
-        self.writeTex(lines)
 
-    '''
-    Writes the Latex header to the 'lines' container
-    Inputs:
-        metaData: '_meta' object from the JSON file, as a dict
-        adventureData: 'adventure' object from the JSON file, as a dict
-    '''
-    def setUpDocument(metaData, adventureData):
-        header = '''\\documentclass[10pt,twoside,twocolumn,openany,nodeprecatedcode]{dndbook}
+    class DocumentRenderer:
+        def __init__(self):
+            self.f_name = "UnnamedDocument"
+            self.temp_name = "_".join(["5eJSON2TEX",self.f_name])
+            self.lines = []
+
+        '''
+        Writes the Latex header to the 'lines' container
+        TODO
+        '''
+        def setUpDocument(self, Title, Subtitle, Author):
+            header = '''\\documentclass[10pt,twoside,twocolumn,openany,nodeprecatedcode]{dndbook}
 \\usepackage[utf8]{inputenc}
 \\usepackage{tabulary}
 \\usepackage[normalem]{ulem}
@@ -410,251 +394,286 @@ class TexRenderer:
 \\addcontentsline{toc}{chapter}{Table Of Contents}
 \\tableofcontents
 \\newpage'''
-        header = header.replace("@DOCUMENT_TITLE", adventureData.get("name"))
-        header = header.replace("@DOCUMENT_SUBTITLE", adventureData.get("storyline"))
-        header = header.replace("@AUTHORS", " ".join(metaData.get("sources")[0].get("authors")))
-        return [header]
+            header = header.replace("@DOCUMENT_TITLE", Title)
+            header = header.replace("@DOCUMENT_SUBTITLE", Subtitle)
+            header = header.replace("@AUTHORS", Author)
+            self.lines.append(header)
 
-    '''
-    Appends the final lines to the 'lines' container for rendering
-    '''
-    def closeDocument():
-        end = "\\end{document}"
-        return [end]
+        '''
+        Appends the final lines to the 'lines' container
+        '''
+        def closeDocument(self):
+            end = "\\end{document}"
+            self.lines.append(end)
 
-    '''
-    Writes the data in the 'lines' to a .tex file in order
-    Input:
-        adventureData: 'adventure' object from the JSON file, as a dict
-    '''
-    def writeTex(self, lines):
-        subEnvLevel = 0
-        passedChapterHeading = False
-        inAppendix = False
-        fs = re.compile(r"([^,.]+)")
-        part = re.compile(r"^(.+)\s(.+)")
-        wmod = re.compile(r"(@WIDTHMOD)")
-        with open(self.temp_name+".tex", 'w') as f:
-            for line in lines:
-                finalLine = TexRenderer.InTextTagRenderer.renderLine(line) + "\n"
-                if line == "@STARTSUBENVIRONMENT": 
-                    finalLine = ""
-                    subEnvLevel += 1
-                if line == "@ENDSUBENVIRONMENT": 
-                    finalLine = ""
-                    subEnvLevel -= 1
-                if re.findall(wmod, finalLine):
-                    if (inAppendix): finalLine = finalLine.replace("@WIDTHMOD", "")
-                    else: finalLine = finalLine.replace("@WIDTHMOD", " / 2 ")
-                    print(finalLine)
-                if passedChapterHeading and not finalLine.startswith("\\") and subEnvLevel == 0 and re.match(fs, finalLine):
-                    fsentence = re.search(fs, finalLine).group(1)
-                    if len(fsentence) > 35: replaceP = re.search(part, fsentence[0:35]).group(1)
-                    else: replaceP = fsentence
-                    new = "\\DndDropCapLine{" + replaceP.replace(replaceP[0], replaceP[0]+"}{", 1) + "}"
-                    finalLine = finalLine.replace(replaceP, new,1)
-                    passedChapterHeading = False
-                if finalLine.startswith("\\chapter{"): 
-                    if finalLine.startswith("\\chapter{Appendix}"): inAppendix = True
-                    else: 
-                        inAppendix = False
-                        passedChapterHeading = True
-                f.write(finalLine)
+        '''
+        Writes the data in the 'lines' to a .tex file in order
+        Input:
+            adventureData: 'adventure' object from the JSON file, as a dict
+        '''
+        def writeTex(self):
+            subEnvLevel = 0
+            passedChapterHeading = False
+            inAppendix = False
+            fs = re.compile(r"([^,.]+)")
+            part = re.compile(r"^(.+)\s(.+)")
+            wmod = re.compile(r"(@WIDTHMOD)")
+            with open(self.temp_name+".tex", 'w') as f:
+                for line in self.lines:
+                    finalLine = TexRenderer.InTextTagRenderer.renderLine(line) + "\n"
+                    if line == "@STARTSUBENVIRONMENT": 
+                        finalLine = ""
+                        subEnvLevel += 1
+                    if line == "@ENDSUBENVIRONMENT": 
+                        finalLine = ""
+                        subEnvLevel -= 1
+                    if re.findall(wmod, finalLine):
+                        if (inAppendix): finalLine = finalLine.replace("@WIDTHMOD", "")
+                        else: finalLine = finalLine.replace("@WIDTHMOD", " / 2 ")
+                        print(finalLine)
+                    if passedChapterHeading and not finalLine.startswith("\\") and subEnvLevel == 0 and re.match(fs, finalLine):
+                        fsentence = re.search(fs, finalLine).group(1)
+                        if len(fsentence) > 35: replaceP = re.search(part, fsentence[0:35]).group(1)
+                        else: replaceP = fsentence
+                        new = "\\DndDropCapLine{" + replaceP.replace(replaceP[0], replaceP[0]+"}{", 1) + "}"
+                        finalLine = finalLine.replace(replaceP, new,1)
+                        passedChapterHeading = False
+                    if finalLine.startswith("\\chapter{"): 
+                        if finalLine.startswith("\\chapter{Appendix}"): inAppendix = True
+                        else: 
+                            inAppendix = False
+                            passedChapterHeading = True
+                    f.write(finalLine)
 
-    '''
-    Calls pdflatex to convert the generated tex file to a pdf and clean up the output
-    '''
-    def convertToPdf(self):
-        print("Compiling PDF from tex... (this can take a couple of seconnds)")
-        os.system("pdflatex "+self.temp_name+".tex")
-        os.system("pdflatex "+self.temp_name+".tex >/dev/null 2>&1")
-        print("Cleaning up output files...")
-        os.system("mv "+self.temp_name+".tex "+self.f_name+".tex")
-        os.system("mv "+self.temp_name+".pdf "+self.f_name+".pdf")
-        os.system("rm "+self.temp_name+"*")
-        os.system("rm -r JSON2TEX_img")
-        print("Done!")
+        '''
+        Calls pdflatex to convert the generated tex file to a pdf and clean up the output
+        '''
+        def convertToPdf(self):
+            print("Compiling PDF from tex... (this can take a couple of seconnds)")
+            os.system("pdflatex "+self.temp_name+".tex")
+            os.system("pdflatex "+self.temp_name+".tex >/dev/null 2>&1")
+            print("Cleaning up output files...")
+            os.system("mv "+self.temp_name+".tex "+self.f_name+".tex")
+            os.system("mv "+self.temp_name+".pdf "+self.f_name+".pdf")
+            os.system("rm "+self.temp_name+"*")
+            os.system("rm -r JSON2TEX_img")
+            print("Done!")
+    
+        '''
+        must be implemented by deriviative classes
+        '''
+        def renderContent(self):
+            pass
 
-    '''
-    Renders adventure content to the 'lines' container
-    Inputs:
-        content: data object of the adventureData field in the JSON, as a dict.
-    '''
-    def renderContent(self, content):
-        lines = []
-        for chapter in content:
-            lines += self.renderRecursive(0, chapter)
-        return lines
+        '''
+        TODO
+        '''
+        def renderDocument(self):
+            self.setUpDocument("Untiteled Document", "", "Autogenerated")
+            self.renderContent()
+            self.closeDocument()
+            self.writeTex()
 
-    '''
-    Main rendering routine. Can be called recursively.
-    Reads the 'type' field of the 'data' input and
-    Inputs:
-        depth: recursion depth (used to detirmine the type of header: from chapter down to subparagraph)
-        data: general JSON object
-    '''
-    def renderRecursive(self, depth, data):
-        lines = []
-        if isinstance(data, str):
-            lines += [data + "\n"]
-        elif data.get("type") == "section" or data.get("type") == "entries":
-            lines += self.renderSection(depth, data)
-        elif data.get("type") == "inset":
-            lines += self.renderInset(depth, data)
-        elif data.get("type") == "insetReadaloud":
-            lines += self.renderReadAloudInset(depth, data)
-        elif data.get("type") == "table":
-            lines += TexRenderer.renderTable(data)
-        elif data.get("type") == "list":
-            lines += TexRenderer.renderList(data)
-        elif data.get("type") == "quote":
-            lines += TexRenderer.renderQuote(data)
-        elif data.get("type") == "image":
-            lines += TexRenderer.renderImage(data)
-        elif data.get("type") == "statblockInline":
-            lines += self.renderStatblock(data)
-        elif data.get("type") == "statblock":
-            lines += self.renderStatblock(data)
-        else:
-            warnings.warn("\nThe following type of JSON-Entry has not yet been implemented: " + data.get("type") + "\nThe entry will be skipped!", category=RuntimeWarning)
-        return lines
+    class AdventureRenderer(DocumentRenderer):
 
-    '''
-    Renders section and chapter headers, then proceedes to recursively loop through the data inside the 'entries' field, again calling renderRecursive with depth increased by 1.
-    '''
-    def renderSection(self, depth, data):
-        titles = [
-        "\\chapter{",
-        "\\section{",
-        "\\subsection{",
-        "\\subsubsection{",
-        "\\paragraph{",
-        "\\subparagraph{"
-        ]
-        lines = []
-        if "name" in data:
-            if data.get("name") == "Appendix":
-                lines += ["\\onecolumn"]
-            lines += [str(titles[depth] + data.get("name") + "} \\label{sec:" + data.get("name").replace(" ", "_") + "}")]
-        for section in data.get("entries"):
-            lines += self.renderRecursive(depth+1, section)
-        return lines
+        '''
+        Renders adventure content to the 'lines' container
+        Inputs:
+            content: data object of the adventureData field in the JSON, as a dict.
+        '''
+        def renderContent(self, ):
+            for chapter in self.jsonData.get("adventureData")[0].get("data"):
+                self.lines.extend(self.renderRecursive(0, chapter))
 
-    '''
-    Renders an inset. The content of the inset is passed through renderRecursive again.
-    '''
-    def renderInset(self, depth, data):
-        lines = ["@STARTSUBENVIRONMENT"]
-        name = ""
-        if "name" in data: name = data.get("name")
-        lines += ["\\begin{DndComment}{" + name + "}"]
-        for section in data.get("entries"):
-            lines += self.renderRecursive(depth+1, section)
-        lines += ["\\end{DndComment}\n"]
-        lines += ["@ENDSUBENVIRONMENT"]
-        return lines
+        '''
+        Renders section and chapter headers, then proceedes to recursively loop through the data inside the 'entries' field, again calling renderRecursive with depth increased by 1.
+        '''
+        def renderSection(self, depth, data):
+            titles = [
+            "\\chapter{",
+            "\\section{",
+            "\\subsection{",
+            "\\subsubsection{",
+            "\\paragraph{",
+            "\\subparagraph{"
+            ]
+            lines = []
+            if "name" in data:
+                if data.get("name") == "Appendix":
+                    lines += ["\\onecolumn"]
+                lines += [str(titles[depth] + data.get("name") + "} \\label{sec:" + data.get("name").replace(" ", "_") + "}")]
+            for section in data.get("entries"):
+                lines += self.renderRecursive(depth+1, section)
+            return lines
 
-    '''
-    Renders a read aloud inset. The content of the inset is passed through renderRecursive again.
-    '''
-    def renderReadAloudInset(self, depth, data):
-        name = ""
-        lines = ["@STARTSUBENVIRONMENT"]
-        if "name" in data: name = data.get("name")
-        lines += ["\\begin{DndReadAloud}{" + name + "}"]
-        for section in data.get("entries"):
-            lines += self.renderRecursive(depth+1, section)
-        lines += ["\\end{DndReadAloud}\n"]
-        lines += ["@ENDSUBENVIRONMENT"]
-        return lines
+        '''
+        Renders tables. Currently column content is written directly to the lines container without going through the renderer again.
+        '''
+        def renderTable(data):
+            lines = ["@STARTSUBENVIRONMENT"]
+            titles = data.get("colLabels")
+            alignments = data.get("colStyles")
+            alignments = " ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c")
+            if "caption" in data: lines += [str("\\begin{DndTable}[header=@CAPTION]{".replace("@CAPTION", data.get("caption")) + alignments + "}\n")]
+            else: lines += ["\\begin{DndTable}{" + alignments + "}\n"]
+            if (titles): lines += [str(" & ".join(titles) + "\\\\")]
+            for row in data.get("rows"):
+                lines += [" & ".join(row) + "\\\\"]
+            lines += [str("\\end{DndTable}\n\n")]
+            lines += ["@ENDSUBENVIRONMENT"]
+            return lines
 
-    '''
-    Renders tables. Currently column content is written directly to the lines container without going through the renderer again.
-    '''
-    def renderTable(data):
-        lines = ["@STARTSUBENVIRONMENT"]
-        titles = data.get("colLabels")
-        alignments = data.get("colStyles")
-        alignments = " ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c")
-        if "caption" in data: lines += [str("\\begin{DndTable}[header=@CAPTION]{".replace("@CAPTION", data.get("caption")) + alignments + "}\n")]
-        else: lines += ["\\begin{DndTable}{" + alignments + "}\n"]
-        if (titles): lines += [str(" & ".join(titles) + "\\\\")]
-        for row in data.get("rows"):
-            lines += [" & ".join(row) + "\\\\"]
-        lines += [str("\\end{DndTable}\n\n")]
-        lines += ["@ENDSUBENVIRONMENT"]
-        return lines
+        '''
+        Renders an inset. The content of the inset is passed through renderRecursive again.
+        '''
+        def renderInset(self, depth, data):
+            lines = ["@STARTSUBENVIRONMENT"]
+            name = ""
+            if "name" in data: name = data.get("name")
+            lines += ["\\begin{DndComment}{" + name + "}"]
+            for section in data.get("entries"):
+                lines += self.renderRecursive(depth+1, section)
+            lines += ["\\end{DndComment}\n"]
+            lines += ["@ENDSUBENVIRONMENT"]
+            return lines
 
-    '''
-    Renders tables. Currently item content is written directly to the lines container without going through the renderer again.
-    This means that 'item' objects will currently break this routine.
-    Also list styles are currently ignored.
-    '''
-    def renderList(data):
-        lines = ["@STARTSUBENVIRONMENT"]
-        lines += ["\\begin{itemize}\n"]
-        for item in data.get("items"):
-            if (isinstance(item, str)): lines += ["\\item " + item]
-        lines += ["\\end{itemize}\n\n"]
-        lines += ["@ENDSUBENVIRONMENT"]
-        return lines
+        '''
+        Renders a read aloud inset. The content of the inset is passed through renderRecursive again.
+        '''
+        def renderReadAloudInset(self, depth, data):
+            name = ""
+            lines = ["@STARTSUBENVIRONMENT"]
+            if "name" in data: name = data.get("name")
+            lines += ["\\begin{DndReadAloud}{" + name + "}"]
+            for section in data.get("entries"):
+                lines += self.renderRecursive(depth+1, section)
+            lines += ["\\end{DndReadAloud}\n"]
+            lines += ["@ENDSUBENVIRONMENT"]
+            return lines
 
-    '''
-    Renders the quote environment.
-    '''
-    def renderQuote(data):
-        lines = ["@STARTSUBENVIRONMENT"]
-        lines += ["\\begingroup\n\\DndSetThemeColor[DmgLavender]\\begin{DndSidebar}{}"]
-        lines += ["\\Large \centering «"]
-        for line in data.get("entries"):
-            lines += ["\\large \centering " + line + ""]
-        lines += ["\\Large »\n \n \\normalsize \\raggedleft \\textit{ - " + data.get("by") + ", " + data.get("from")+"}"]
-        lines += ["\\end{DndSidebar}\n\\endgroup"]
-        lines += ["@ENDSUBENVIRONMENT"]
-        return lines
+        '''
+        Renders tables. Currently item content is written directly to the lines container without going through the renderer again.
+        This means that 'item' objects will currently break this routine.
+        Also list styles are currently ignored.
+        '''
+        def renderList(data):
+            lines = ["@STARTSUBENVIRONMENT"]
+            lines += ["\\begin{itemize}\n"]
+            for item in data.get("items"):
+                if (isinstance(item, str)): lines += ["\\item " + item]
+            lines += ["\\end{itemize}\n\n"]
+            lines += ["@ENDSUBENVIRONMENT"]
+            return lines
 
-    '''
-    Adds an image. Currently this will not work with remote images (ie. the standard in 5eJSONS - this is the only point where the standard 5eJSON syntax does not work).
-    '''
-    def renderImage(data):
-        lines = ["@STARTSUBENVIRONMENT"]
-        if data.get("href").get("type") == "external":
-            try:
-                import requests
-                image_url = data.get("href").get("url")
-                r = requests.get(image_url)
-                os.system("mkdir ./JSON2TEX_img")
-                file_name = "./JSON2TEX_img/" + str(hash(image_url))+".png"
-                with open(file_name,'wb') as f:
-                    f.write(r.content)
-                lines += ["\\begingroup\n\\DndSetThemeColor[DmgLavender]\\begin{figure}[H]\n\\centering"]
-                lines += ["\includegraphics[width = 0.8 \\textwidth]{" + file_name + "}"]
-                if "title" in data or "credit" in data: 
-                    caption = []
-                    if "title" in data: caption.append(data.get("title"))
-                    if "credit" in data: caption.append("\\textit{" + data.get("credit") + "}")
-                    lines += ["\caption*{" + "\\\\ \\footnotesize Source: ".join(caption) + "}"]
-                lines += ["\\end{figure}\n\\endgroup"]
-            except:
-                warnings.warn("\nSomething went wrong when rendering the image", category=RuntimeWarning)
-        else: warnings.warn("\nImage rendering for 'internal' type not implemented", category=RuntimeWarning)
-        lines += ["@ENDSUBENVIRONMENT"]
-        return lines
+        '''
+        Renders the quote environment.
+        '''
+        def renderQuote(data):
+            lines = ["@STARTSUBENVIRONMENT"]
+            lines += ["\\begingroup\n\\DndSetThemeColor[DmgLavender]\\begin{DndSidebar}{}"]
+            lines += ["\\Large \centering «"]
+            for line in data.get("entries"):
+                lines += ["\\large \centering " + line + ""]
+            lines += ["\\Large »\n \n \\normalsize \\raggedleft \\textit{ - " + data.get("by") + ", " + data.get("from")+"}"]
+            lines += ["\\end{DndSidebar}\n\\endgroup"]
+            lines += ["@ENDSUBENVIRONMENT"]
+            return lines
 
-    '''
-    Renders statblocks
-    '''
-    def renderStatblock(self, data):
-        renderer = TexRenderer.StatBlockRenderer()
-        linesToAdd = ["@STARTSUBENVIRONMENT"]
-        if data.get("type") == "statblockInline": linesToAdd += renderer.renderInlineStatBlock(data.get("data"))
-        elif data.get("type") == "statblock":
-            monsterData = self.jsonData.get("monster")
-            monsterFound = False
-            for monster in monsterData:
-                if monster.get("name") == data.get("name"): 
-                    linesToAdd += renderer.renderInlineStatBlock(monster)
-                    monsterFound = True
-            if not monsterFound: linesToAdd += ["Monster @MONSTERNAME not found in this source".replace("@MONSTERNAME", data.get("name"))]
-        linesToAdd += ["@ENDSUBENVIRONMENT"]
-        return linesToAdd
+        '''
+        Adds an image. Currently this will not work with remote images (ie. the standard in 5eJSONS - this is the only point where the standard 5eJSON syntax does not work).
+        '''
+        def renderImage(data):
+            lines = ["@STARTSUBENVIRONMENT"]
+            if data.get("href").get("type") == "external":
+                try:
+                    import requests
+                    image_url = data.get("href").get("url")
+                    r = requests.get(image_url)
+                    os.system("mkdir ./JSON2TEX_img")
+                    file_name = "./JSON2TEX_img/" + str(hash(image_url))+".png"
+                    with open(file_name,'wb') as f:
+                        f.write(r.content)
+                    lines += ["\\begingroup\n\\DndSetThemeColor[DmgLavender]\\begin{figure}[H]\n\\centering"]
+                    lines += ["\includegraphics[width = 0.8 \\textwidth]{" + file_name + "}"]
+                    if "title" in data or "credit" in data: 
+                        caption = []
+                        if "title" in data: caption.append(data.get("title"))
+                        if "credit" in data: caption.append("\\textit{" + data.get("credit") + "}")
+                        lines += ["\caption*{" + "\\\\ \\footnotesize Source: ".join(caption) + "}"]
+                    lines += ["\\end{figure}\n\\endgroup"]
+                except:
+                    warnings.warn("\nSomething went wrong when rendering the image", category=RuntimeWarning)
+            else: warnings.warn("\nImage rendering for 'internal' type not implemented", category=RuntimeWarning)
+            lines += ["@ENDSUBENVIRONMENT"]
+            return lines
+
+        '''
+        Renders statblocks
+        '''
+        def renderStatblock(self, data):
+            renderer = TexRenderer.StatBlockRenderer()
+            linesToAdd = ["@STARTSUBENVIRONMENT"]
+            if data.get("type") == "statblockInline": linesToAdd += renderer.renderInlineStatBlock(data.get("data"))
+            elif data.get("type") == "statblock":
+                monsterData = self.jsonData.get("monster")
+                monsterFound = False
+                for monster in monsterData:
+                    if monster.get("name") == data.get("name"): 
+                        linesToAdd += renderer.renderInlineStatBlock(monster)
+                        monsterFound = True
+                if not monsterFound: linesToAdd += ["Monster @MONSTERNAME not found in this source".replace("@MONSTERNAME", data.get("name"))]
+            linesToAdd += ["@ENDSUBENVIRONMENT"]
+            return linesToAdd
+
+        '''
+        Main rendering routine. Can be called recursively.
+        Reads the 'type' field of the 'data' input and
+        Inputs:
+            depth: recursion depth (used to detirmine the type of header: from chapter down to subparagraph)
+            data: general JSON object
+        '''
+        def renderRecursive(self, depth, data):
+            lines = []
+            if isinstance(data, str):
+                lines += [data + "\n"]
+            elif data.get("type") == "section" or data.get("type") == "entries":
+                lines += self.renderSection(depth, data)
+            elif data.get("type") == "inset":
+                lines += self.renderInset(depth, data)
+            elif data.get("type") == "insetReadaloud":
+                lines += self.renderReadAloudInset(depth, data)
+            elif data.get("type") == "table":
+                lines += TexRenderer.AdventureRenderer.renderTable(data)
+            elif data.get("type") == "list":
+                lines += TexRenderer.AdventureRenderer.renderList(data)
+            elif data.get("type") == "quote":
+                lines += TexRenderer.AdventureRenderer.renderQuote(data)
+            elif data.get("type") == "image":
+                lines += TexRenderer.AdventureRenderer.renderImage(data)
+            elif data.get("type") == "statblockInline":
+                lines += self.renderStatblock(data)
+            elif data.get("type") == "statblock":
+                lines += self.renderStatblock(data)
+            else:
+                warnings.warn("\nThe following type of JSON-Entry has not yet been implemented: " + data.get("type") + "\nThe entry will be skipped!", category=RuntimeWarning)
+            return lines
+
+        def __init__(self, JSONPath):
+            super().__init__()
+            with open(JSONPath) as file:
+                self.jsonData = json.load(file)
+            self.f_name = self.jsonData.get("adventure")[0].get("name").replace(" ", "_")
+            if "storyline" in self.jsonData.get("adventure")[0]: self.f_name = self.jsonData.get("adventure")[0].get("storyline").replace(" ", "_") + "_" + self.f_name
+            self.temp_name = "_".join(["5eJSON2TEX",self.f_name])
+
+        '''
+        TODO
+        '''
+        def renderAdventure(self):
+            authors = ", ".join(self.jsonData.get("_meta").get("sources")[0].get("authors"))
+            title = self.jsonData.get("adventure")[0].get("name")
+            subtitle = self.jsonData.get("adventure")[0].get("storyline") 
+            self.setUpDocument(title, subtitle, authors)
+            self.renderContent()
+            self.closeDocument()
+            self.writeTex()
