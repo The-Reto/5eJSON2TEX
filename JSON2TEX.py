@@ -442,12 +442,6 @@ class TexRenderer:
             os.system("rm "+self.temp_name+"*")
             os.system("rm -r JSON2TEX_img")
             print("Done!")
-    
-        '''
-        must be implemented by deriviative classes
-        '''
-        def renderContent(self):
-            pass
 
         '''
         renders the document
@@ -457,8 +451,6 @@ class TexRenderer:
             self.renderContent()
             self.closeDocument()
             self.writeTex()
-
-    class AdventureRenderer(DocumentRenderer):
 
         '''
         Renders adventure content to the 'lines' container
@@ -500,7 +492,7 @@ class TexRenderer:
             self.SubenvLvl += 1
             titles = data.get("colLabels")
             alignments = data.get("colStyles")
-            alignments = "X " * len(alignments)# #" ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c")
+            alignments = "X " * len(alignments)# TODO #" ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c")
             if "caption" in data: lines += [str("\\begin{DndTable}[header=@CAPTION]{".replace("@CAPTION", data.get("caption")) + alignments + "}\n")]
             else: lines += ["\\begin{DndTable}{" + alignments + "}\n"]
             if (titles): lines += [str(" & ".join(titles) + "\\\\")]
@@ -672,6 +664,8 @@ class TexRenderer:
                 warnings.warn("\nThe following type of JSON-Entry has not yet been implemented: " + data.get("type") + "\nThe entry will be skipped!", category=RuntimeWarning)
             return lines
 
+
+    class AdventureRenderer(DocumentRenderer):
         def __init__(self, JSONPath):
             super().__init__()
             with open(JSONPath) as file:
