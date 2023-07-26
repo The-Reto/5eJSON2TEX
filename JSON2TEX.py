@@ -309,10 +309,13 @@ class TexRenderer:
                 return line.replace(tag, replacement)
             ""
             if type == "{@book ":
-                displayText = re.findall("( [A-z].*?\|)", tag)[0].replace("|", "")
-                reference = re.findall("(\|[A-z]+?\|)", tag)[0].replace("|", "")
-                chapter = re.findall("(\|[0-9]+?\|)", tag)[0].replace("|", "")
-                replacement = "@TEXT\\footnote{see: @REF chapter @CHAP}".replace("@TEXT", displayText).replace("@REF", reference).replace("@CHAP", chapter)
+                try:
+                    displayText = re.findall("( [A-z].*?\|)", tag)[0].replace("|", "")
+                    reference = re.findall("(\|[A-z]+?\|)", tag)[0].replace("|", "")
+                    chapter = re.findall("(\|[0-9]+?\|)", tag)[0].replace("|", "")
+                    replacement = "@TEXT\\footnote{see: @REF chapter @CHAP}".replace("@TEXT", displayText).replace("@REF", reference).replace("@CHAP", chapter)
+                except:
+                    replacement = "(UNRENDERED TAG)"
                 return line.replace(tag, replacement)
 
         @staticmethod
@@ -387,6 +390,7 @@ class TexRenderer:
                                 {"name":"hyperref", "options":"colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black"}
                              ]
             self.additionalHeaderOptions = []
+            self.contentData = {}
 
         '''
         Writes the Latex header to the 'lines' container
@@ -462,7 +466,7 @@ class TexRenderer:
             content: data object of the adventureData field in the JSON, as a dict.
         '''
         def renderContent(self):
-            for chapter in self.jsonData.get("adventureData")[0].get("data"):
+            for chapter in self.contentData:
                 self.lines.extend(self.renderRecursive(0, chapter))
 
         '''
@@ -483,7 +487,7 @@ class TexRenderer:
             if data.get("name") == "Appendix":
                 lines += ["\\onecolumn"] 
                 self.inAppendix = True
-            lines += [str(titles[depth] + data.get("name") + "} \\label{sec:" + data.get("name").replace(" ", "_") + "}")]
+            if "name" in data:lines += [str(titles[depth] + data.get("name") + "} \\label{sec:" + data.get("name").replace(" ", "_") + "}")]
             for section in data.get("entries"):
                 lines += self.renderRecursive(depth+1, section)
             return lines
@@ -496,7 +500,7 @@ class TexRenderer:
             self.SubenvLvl += 1
             titles = data.get("colLabels")
             alignments = data.get("colStyles")
-            alignments = " ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c")
+            alignments = " ".join(alignments).replace("text-align-left", "X").replace("text-align-center", "c") #"c " * len(alignments)#
             if "caption" in data: lines += [str("\\begin{DndTable}[header=@CAPTION]{".replace("@CAPTION", data.get("caption")) + alignments + "}\n")]
             else: lines += ["\\begin{DndTable}{" + alignments + "}\n"]
             if (titles): lines += [str(" & ".join(titles) + "\\\\")]
@@ -637,8 +641,8 @@ class TexRenderer:
             lines = []
             if isinstance(data, str):
                 if self.passedChapterHeading and self.SubenvLvl == 0 and not self.inAppendix:
-                    lines.append(self.addDropCap(data))
-                else: lines += [data + "\n"]
+                    data = self.addDropCap(data)
+                lines += [data.replace("&", "\\&") + "\n"]
             elif data.get("type") == "section" or data.get("type") == "entries":
                 lines += self.renderSection(depth, data)
             elif data.get("type") == "inset":
@@ -665,22 +669,27 @@ class TexRenderer:
             super().__init__()
             with open(JSONPath) as file:
                 self.jsonData = json.load(file)
-            self.f_name = self.jsonData.get("adventure")[0].get("name").replace(" ", "_")
-            if "storyline" in self.jsonData.get("adventure")[0]: self.f_name = self.jsonData.get("adventure")[0].get("storyline").replace(" ", "_") + "_" + self.f_name
+            self.title = self.jsonData.get("adventure")[0].get("name")
+            self.f_name = self.title.replace(" ", "_")
+            self.authors = ", ".join(self.jsonData.get("_meta").get("sources")[0].get("authors"))
+            if "storyline" in self.jsonData.get("adventure")[0]: 
+                self.f_name = self.jsonData.get("adventure")[0].get("storyline").replace(" ", "_") + "_" + self.f_name
+                self.subtitle = self.jsonData.get("adventure")[0].get("storyline")
+            self.additionalHeaderOptions.append("\\DndSetThemeColor[PhbMauve]")
             self.temp_name = "_".join(["5eJSON2TEX",self.f_name])
             self.passedChapterHeading = False
             self.inAppendix = False
+            self.contentData = self.jsonData.get("adventureData")[0].get("data")
 
         '''
         TODO
         '''
         def renderAdventure(self):
-            self.authors = ", ".join(self.jsonData.get("_meta").get("sources")[0].get("authors"))
-            self.title = self.jsonData.get("adventure")[0].get("name")
-            self.subtitle = self.jsonData.get("adventure")[0].get("storyline")
-            self.additionalHeaderOptions.append("\\DndSetThemeColor[PhbMauve]")
             super().renderDocument()
 
+        '''
+        TODO
+        '''
         def writeTex(self):
             self.lines = [TexRenderer.InTextTagRenderer.renderLine(line) for line in self.lines]
             super().writeTex()
