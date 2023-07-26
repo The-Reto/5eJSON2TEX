@@ -4,7 +4,9 @@ import warnings
 import re
 
 class TexRenderer:
-
+    '''
+    Used to render Statblocks
+    '''
     class StatBlockRenderer:
         def __init__(self):
             self.lines = []
@@ -219,6 +221,9 @@ class TexRenderer:
                     self.lines.append(entry + "\n")
 
 
+    '''
+    Used to render the in-text-tags
+    '''
     class InTextTagRenderer:
         '''
         Resolves all tags in a string
@@ -371,6 +376,9 @@ class TexRenderer:
             else: return line.replace(tag, tag.replace(tagStart, formatStr))
 
 
+    '''
+    Main renderer class
+    '''
     class DocumentRenderer:
         def __init__(self):
             self.f_name = "UnnamedDocument"
@@ -391,6 +399,8 @@ class TexRenderer:
                              ]
             self.additionalHeaderOptions = []
             self.contentData = {}
+            self.passedChapterHeading = False
+            self.inAppendix = False
 
         '''
         Writes the Latex header to the 'lines' container
@@ -425,6 +435,7 @@ class TexRenderer:
             adventureData: 'adventure' object from the JSON file, as a dict
         '''
         def writeTex(self):
+            self.lines = [TexRenderer.InTextTagRenderer.renderLine(line) for line in self.lines]
             with open(self.temp_name+".tex", 'w') as f:
                 for line in self.lines:
                     f.write(line + "\n")
@@ -446,7 +457,7 @@ class TexRenderer:
         '''
         renders the document
         '''
-        def renderDocument(self):
+        def render(self):
             self.setUpDocument()
             self.renderContent()
             self.closeDocument()
@@ -665,7 +676,10 @@ class TexRenderer:
             return lines
 
 
-    class AdventureRenderer(DocumentRenderer):
+    '''
+    Renderer for the standard 5e.tools homebrew format
+    '''
+    class HomebrewRenderer(DocumentRenderer):
         def __init__(self, JSONPath):
             super().__init__()
             with open(JSONPath) as file:
@@ -678,19 +692,4 @@ class TexRenderer:
                 self.subtitle = self.jsonData.get("adventure")[0].get("storyline")
             self.additionalHeaderOptions.append("\\DndSetThemeColor[PhbMauve]")
             self.temp_name = "_".join(["5eJSON2TEX",self.f_name])
-            self.passedChapterHeading = False
-            self.inAppendix = False
             self.contentData = self.jsonData.get("adventureData")[0].get("data")
-
-        '''
-        TODO
-        '''
-        def renderAdventure(self):
-            super().renderDocument()
-
-        '''
-        TODO
-        '''
-        def writeTex(self):
-            self.lines = [TexRenderer.InTextTagRenderer.renderLine(line) for line in self.lines]
-            super().writeTex()
