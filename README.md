@@ -26,6 +26,7 @@ After installing, refer to demo.py for example usage. The class HomebrewRenderer
 Some manual editing of the LaTeX-file migth be preferable for optimal PDF outcome, but in general the auto-generated LaTeX is quite good - I'm even surprised by it and I wrote the bloodly converter.
 <details>
 <summary>`demo.py` details</summary>
+    
 #### `demo.py` details
 As is the `demo.py` will render the contents of `AnExampleAdventure.json` with the standard settings (see the `renderExampleAdventure()` method for usage details). By exchanging the path provided you should be able to render any of the homebrew JSONs at https://github.com/TheGiddyLimit/homebrew to a .tex / .pdf file.
 
@@ -38,7 +39,9 @@ As is the `demo.py` will render the contents of `AnExampleAdventure.json` with t
 }
 ```
 **Important Note:** rendering the render demo does not yet work and will yield LaTeX errors!
+
 </details>
+
 ## The Project
 ### Why?
 Because I was homebrewing my own adventure (not, yet, public) using the 5e.tools tools and thought it'd be cool to also have my adventure as a PDF.
