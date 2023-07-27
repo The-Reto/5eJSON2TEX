@@ -69,14 +69,13 @@
 					"type": "section",
 					"id": "ExampleChapter",
 					"entries": [
-						"The exemplary Example Adventure is an example module to test the 5eJSON2TEX converter.",
+						"The exemplary Example Adventure is an example module to test the 5eJSON2TEX converter. This document serves as an example to showcase the formatting. I'm not saying the converter is perfect, but it works (more or less).",
 						{	"name": "With a header",
 							"type": "section",
 							"id": "Withaheader",
 							"entries": [
 								"{@b Lorem ipsum dolor sit amet}, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-								"Ut wisi enim ad minim veniam, quis {@b {@i nostrud exerci} tation} ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at {@i vero eros et accumsan} et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.",
-								"Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat."
+								"Ut wisi enim ad minim veniam, quis {@b {@i nostrud exerci} tation} ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at {@i vero eros et accumsan} et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi."
 							]
 						},
 						{	"name": "or two",
@@ -87,17 +86,196 @@
 								{
 									"type": "insetReadaloud",
 									"entries": [
-										"Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. "
+										"{@b Read-Aloud Insets:} Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. "
 									]
 								},
 								{
 									"type": "inset",
+									"name": "General Insets",
 									"entries": [
 										"Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. "
 									]
 								}
 							]
-						}
+						},
+						{	"type": "statblockInline",
+							"style": "inset",
+							"dataType": "monster",
+							"data": {
+								"name": "Lorem Ipsum",
+								"size": [
+									"L"
+								],
+								"type": "celestial",
+								"source": "MM",
+								"alignment": [
+									"L",
+									"G"
+								],
+								"ac": [
+									{
+										"ac": 12,
+										"from": [
+											"horn armor"
+										]
+									},
+									{
+										"ac": 10,
+										"from": [
+											"natural armor"
+										],
+										"condition": "when de-horned"
+									}
+								],
+								"hp": {
+									"average": 67,
+									"formula": "9d10 + 18"
+								},
+								"speed": {
+									"walk": 50,
+									"fly": {
+										"number": 30,
+										"condition": "(when thrown)"
+									}
+								},
+								"str": 18,
+								"dex": 14,
+								"con": 15,
+								"int": 11,
+								"wis": 17,
+								"cha": 16,
+								"immune": [
+									"poison"
+								],
+								"resist": [
+									{
+										"resist": [
+											"cold",
+											"poison"
+										]
+									}
+								],
+								"vulnerable": [
+									{
+										"vulnerable": [
+											"force",
+											"necrotic",
+											"slashing"
+										]
+									},
+									{
+										"vulnerable": [
+											"acid"
+										],
+										"note": "when horned"
+									}
+								],	
+								"save": {
+									"str": "+5",
+									"dex": "+3"
+								},
+								"skill": {
+									"athletics": "+7",
+									"deception": "+7",
+									"insight": "+5"
+								},
+								"conditionImmune": [
+									"charmed",
+									"paralyzed",
+									"poisoned"
+								],
+								"senses": [
+									"darkvision 60 ft."
+								],
+								"passive": 13,
+								"languages": [
+									"Celestial",
+									"Elvish"
+								],
+								"cr": "5",
+								"trait": [
+									{
+										"name": "Magic Resistance",
+										"entries": [
+											"The Lorem has advantage on saving throws against spells and other magical effects."
+										]
+									},
+									{
+										"name": "Magic Weapons",
+										"entries": [
+											"The Lorem's weapon attacks are magical."
+										]
+									}
+								],
+								"action": [
+									{
+										"name": "Multiattack",
+										"entries": [
+											"The Lorem makes two attacks: one with its hooves and one with its horn."
+										]
+									},
+									{
+										"name": "Horn",
+										"entries": [
+											"{@atk mw} {@hit 7} to hit, reach 5 ft., one target. Hit: {@damage 1d8 + 4} piercing damage."
+										]
+									},
+									{
+										"name": "Teleport (1/Day)",
+										"entries": [
+											"The Lorem magically teleports itself and up to three willing creatures it can see within 5 feet of it, along with any equipment they are wearing or carrying, to a location the Lorem is familiar with, up to 1 mile away."
+										]
+									}
+								],
+								"legendary": [
+									{
+										"name": "Hooves",
+										"entries": [
+											"The Lorem makes one attack with its hooves."
+										]
+									},
+									{
+										"name": "Shimmering Shield (Costs 2 Actions)",
+										"entries": [
+											"The Lorem creates a shimmering, magical field around itself or another creature it can see within 60 feet of it. The target gains a +2 bonus to AC until the end of the Lorem's next turn."
+										]
+									}
+								],
+								"page": 294,
+								"spellcasting": [
+									{
+										"name": "Innate Spellcasting",
+										"headerEntries": [
+											"The Lorem's innate spellcasting ability is Charisma (spell save {@dc 14}). The Lorem can innately cast the following spells, requiring no components:"
+										],
+										"will": [
+											"{@spell detect evil and good}",
+											"{@spell druidcraft}",
+											"{@spell pass without trace}"
+										],
+										"daily": {
+											"1e": [
+												"{@spell calm emotions}",
+												"{@spell dispel evil and good}",
+												"{@spell entangle}"
+											]
+										},
+										"ability": "cha"
+									}
+								],
+								"environment": [
+									"forest"
+								],
+								"traitTags": [
+									"Charge",
+									"Magic Resistance",
+									"Magic Weapons"
+								],
+								"actionTags": [
+									"Multiattack"
+								]
+							}
+						}		
 					]
 				},
 				{	"name": "An other Chapter",
@@ -118,16 +296,15 @@
 								{	"name": "praesent luptatum",
 									"type": "inset",
 									"entries": [
-										"Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. "
+										"Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi."
 									]
 								},
-								"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-								"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.",
+								"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
 								{	"name": "Lorem ipsum dolor sit amet",
 									"type": "insetReadaloud",
 									"entries": [
-										"{@i Lorem ipsum dolor sit amet}, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
-										"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. {@b Lorem ipsum dolor sit amet}, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. "
+										"{@i Lorem ipsum dolor sit amet}, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+										"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat. {@b Lorem ipsum dolor sit amet}, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. "
 									]
 								}
 							]
@@ -150,8 +327,7 @@
 														"type": "entries",
 														"id": "foobald",
 														"entries": [
-																"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", 
-																"At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet"
+																"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua."
 														]
 													}
 												]
@@ -187,7 +363,7 @@
 									"rows": [
 										["Lorem", "Ipsum"],
 										["dolor", "amet"],
-										["a big table entry:", "Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. "]
+										["a big table entry:", "Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."]
 									]
 								}
 							]
@@ -232,185 +408,7 @@
 							"id": "ThatsIt",
 							"entries": [
 								"Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.",
-								"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero!",
-								{	"type": "statblockInline",
-									"style": "inset",
-									"dataType": "monster",
-									"data": {
-										"name": "Lorem Ipsum",
-										"size": [
-											"L"
-										],
-										"type": "celestial",
-										"source": "MM",
-										"alignment": [
-											"L",
-											"G"
-										],
-										"ac": [
-											{
-												"ac": 12,
-												"from": [
-													"horn armor"
-												]
-											},
-											{
-												"ac": 10,
-												"from": [
-													"natural armor"
-												],
-												"condition": "when de-horned"
-											}
-										],
-										"hp": {
-											"average": 67,
-											"formula": "9d10 + 18"
-										},
-										"speed": {
-											"walk": 50,
-											"fly": {
-												"number": 30,
-												"condition": "(when thrown)"
-											}
-										},
-										"str": 18,
-										"dex": 14,
-										"con": 15,
-										"int": 11,
-										"wis": 17,
-										"cha": 16,
-										"immune": [
-											"poison"
-										],
-										"resist": [
-											{
-												"resist": [
-													"cold",
-													"poison"
-												]
-											}
-										],
-										"vulnerable": [
-											{
-												"vulnerable": [
-													"force",
-													"necrotic",
-													"slashing"
-												]
-											},
-											{
-												"vulnerable": [
-													"acid"
-												],
-												"note": "when horned"
-											}
-										],	
-										"save": {
-											"str": "+5",
-											"dex": "+3"
-										},
-										"skill": {
-											"athletics": "+7",
-											"deception": "+7",
-											"insight": "+5"
-										},
-										"conditionImmune": [
-											"charmed",
-											"paralyzed",
-											"poisoned"
-										],
-										"senses": [
-											"darkvision 60 ft."
-										],
-										"passive": 13,
-										"languages": [
-											"Celestial",
-											"Elvish"
-										],
-										"cr": "5",
-										"trait": [
-											{
-												"name": "Magic Resistance",
-												"entries": [
-													"The Lorem has advantage on saving throws against spells and other magical effects."
-												]
-											},
-											{
-												"name": "Magic Weapons",
-												"entries": [
-													"The Lorem's weapon attacks are magical."
-												]
-											}
-										],
-										"action": [
-											{
-												"name": "Multiattack",
-												"entries": [
-													"The Lorem makes two attacks: one with its hooves and one with its horn."
-												]
-											},
-											{
-												"name": "Horn",
-												"entries": [
-													"{@atk mw} {@hit 7} to hit, reach 5 ft., one target. Hit: {@damage 1d8 + 4} piercing damage."
-												]
-											},
-											{
-												"name": "Teleport (1/Day)",
-												"entries": [
-													"The Lorem magically teleports itself and up to three willing creatures it can see within 5 feet of it, along with any equipment they are wearing or carrying, to a location the Lorem is familiar with, up to 1 mile away."
-												]
-											}
-										],
-										"legendary": [
-											{
-												"name": "Hooves",
-												"entries": [
-													"The Lorem makes one attack with its hooves."
-												]
-											},
-											{
-												"name": "Shimmering Shield (Costs 2 Actions)",
-												"entries": [
-													"The Lorem creates a shimmering, magical field around itself or another creature it can see within 60 feet of it. The target gains a +2 bonus to AC until the end of the Lorem's next turn."
-												]
-											}
-										],
-										"page": 294,
-										"spellcasting": [
-											{
-												"name": "Innate Spellcasting",
-												"headerEntries": [
-													"The Lorem's innate spellcasting ability is Charisma (spell save {@dc 14}). The Lorem can innately cast the following spells, requiring no components:"
-												],
-												"will": [
-													"{@spell detect evil and good}",
-													"{@spell druidcraft}",
-													"{@spell pass without trace}"
-												],
-												"daily": {
-													"1e": [
-														"{@spell calm emotions}",
-														"{@spell dispel evil and good}",
-														"{@spell entangle}"
-													]
-												},
-												"ability": "cha"
-											}
-										],
-										"environment": [
-											"forest"
-										],
-										"traitTags": [
-											"Charge",
-											"Magic Resistance",
-											"Magic Weapons"
-										],
-										"actionTags": [
-											"Multiattack"
-										]
-									}
-								}					
+								"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero!"			
 							]
 						}
 					]
@@ -424,7 +422,7 @@
 							"id": "AppendixSpecial",
 							"entries": 
 							[
-								"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+								"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
 								"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."
 							]
 						},
