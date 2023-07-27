@@ -2,8 +2,10 @@
 
 !README.md
 
-!JSON2TEX.py
+!json2tex
+!json2tex/*.py
 !demo.py
+!setup.py
 
 !AnExampleAdventure.json
 !5eJSON2TEX_-_The_exemplary_Example_Adventure.tex
