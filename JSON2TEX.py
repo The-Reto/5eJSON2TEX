@@ -399,8 +399,11 @@ class TexRenderer:
                              ]
             self.additionalHeaderOptions = []
             self.contentData = {}
+            self.creatureData = []
             self.passedChapterHeading = False
             self.inAppendix = False
+            self.hasContentData = False
+            self.hasCreatureData = False
 
         '''
         Writes the Latex header to the 'lines' container
@@ -627,13 +630,15 @@ class TexRenderer:
             self.SubenvLvl += 1
             if data.get("type") == "statblockInline": linesToAdd += renderer.renderInlineStatBlock(data.get("data"), doubleWidht=self.inAppendix)
             elif data.get("type") == "statblock":
-                monsterData = self.jsonData.get("monster")
-                monsterFound = False
-                for monster in monsterData:
-                    if monster.get("name") == data.get("name"): 
-                        linesToAdd += renderer.renderInlineStatBlock(monster, doubleWidht=self.inAppendix)
-                        monsterFound = True
-                if not monsterFound: linesToAdd += ["Monster @MONSTERNAME not found in this source".replace("@MONSTERNAME", data.get("name"))]
+                if self.hasCreatureData:
+                    monsterFound = False
+                    for monster in self.creatureData:
+                        if monster.get("name") == data.get("name"): 
+                            linesToAdd += renderer.renderInlineStatBlock(monster, doubleWidht=self.inAppendix)
+                            monsterFound = True
+                    if not monsterFound: linesToAdd += ["Monster @MONSTERNAME not found in source".replace("@MONSTERNAME", data.get("name"))]
+                else:
+                    linesToAdd += ["No creature data provided, cannot render Monster @MONSTERNAME".replace("@MONSTERNAME", data.get("name"))]
             self.SubenvLvl -= 1
             return linesToAdd
 
@@ -706,3 +711,8 @@ class TexRenderer:
             self.additionalHeaderOptions.append("\\DndSetThemeColor[PhbMauve]")
             self.temp_name = "_".join(["5eJSON2TEX",self.f_name])
             self.contentData = self.jsonData.get("adventureData")[0].get("data")
+            self.hasContentData = True
+            if "monster" in self.jsonData: 
+                self.creatureData = self.jsonData.get("monster")
+                self.hasCreatureData = True
+
