@@ -10,11 +10,9 @@ class TexRenderer:
     class StatBlockRenderer:
         def __init__(self):
             self.lines = []
-        def renderInlineStatBlock(self, monsterData, doubleWidht = False):
-            if doubleWidht: 
-                self.lines.append("\\begin{DndMonster}[width=\\textwidth + 8pt]{@MONSTERNAME}".replace("@MONSTERNAME", monsterData.get("name")))
-            else:
-                self.lines.append("\\begin{DndMonster}[width=0.5 \\textwidth + 8pt]{@MONSTERNAME}".replace("@MONSTERNAME", monsterData.get("name")))
+        def renderInlineStatBlock(self, monsterData):
+            if "_copy" in monsterData: return ["Cannot yet render copied monsterdata"]
+            self.lines.append("\\begin{DndMonster}[width=\\linewidth + 8pt]{@MONSTERNAME}".replace("@MONSTERNAME", monsterData.get("name")))
             self.renderMonsterType(monsterData)
             self.renderMonsterBasics(monsterData)
             self.renderAbilityScores(monsterData)
@@ -405,7 +403,8 @@ class TexRenderer:
             self.title = title
             self.subtitle = subtitle
             self.authors = authors
-            self.f_name = "_-_".join([self.subtitle.replace(" ", "_"), self.title.replace(" ", "_")])
+            if self.subtitle == "": self.f_name = self.title.replace(" ", "_")
+            else: self.f_name = "_-_".join([self.subtitle.replace(" ", "_"), self.title.replace(" ", "_")])
             self.temp_name = "_".join(["5eJSON2TEX",self.f_name])
 
         def setContentData(self, jsonPath):
@@ -521,13 +520,16 @@ class TexRenderer:
             alignKey = {"text-align-left":"X", "text-align-center":"c"}
             out = []
             for alignment in alignments:
-                if alignment in alignKey: out.append(alignKey.get(alignment))
-                elif alignment.startswith("col-"): 
-                    width = float(alignment.replace("col-", "").replace(" text-center", "")) / 12
-                    alignStr = ">{\hsize=@WIDTH\hsize}X".replace("@WIDTH", "%.3f" % width)
-                    if alignment.endswith(" text-center"): alignStr = alignStr.replace("X", "c")
-                    out.append(alignStr)
-                else: out.append("X")
+                try:
+                    if alignment in alignKey: out.append(alignKey.get(alignment))
+                    elif alignment.startswith("col-"): 
+                        width = float(alignment.replace("col-", "").replace(" text-center", "")) / 12
+                        alignStr = ">{\hsize=@WIDTH\hsize}X".replace("@WIDTH", "%.3f" % width)
+                        if alignment.endswith(" text-center"): alignStr = alignStr.replace("X", "c")
+                        out.append(alignStr)
+                    else: out.append("X")
+                except:
+                    out.append("X")
             return " ".join(out)
         '''
         Renders tables. Currently column content is written directly to the lines container without going through the renderer again.
@@ -542,7 +544,7 @@ class TexRenderer:
             else: lines += ["\\begin{DndTable}{" + alignmentStr + "}\n"]
             if (titles): lines += [str(" & ".join(titles) + "\\\\")]
             for row in data.get("rows"):
-                if isinstance(row, list): row = [self.renderRecursive(4, cell)[0] for cell in row]
+                if isinstance(row, list): row = ["\n".join(self.renderRecursive(4, cell)) for cell in row]
                 elif isinstance(row, dict): row = self.renderRecursive(4, row)
                 lines += [" & ".join(row) + "\\\\"]
             lines += [str("\\end{DndTable}\n\n")]
@@ -589,7 +591,7 @@ class TexRenderer:
             self.SubenvLvl += 1
             lines += ["\\begin{itemize}\n"]
             for item in data.get("items"):
-                if (isinstance(item, str)): lines += ["\\item " + item]
+                if (isinstance(item, str)): lines += ["\\item " + item.replace("&", "\\&").replace("&quot;", "\"").replace("_", "\_")]
             lines += ["\\end{itemize}\n\n"]
             self.SubenvLvl -= 1
             return lines
@@ -646,13 +648,14 @@ class TexRenderer:
             renderer = TexRenderer.StatBlockRenderer()
             linesToAdd = []
             self.SubenvLvl += 1
-            if data.get("type") == "statblockInline": linesToAdd += renderer.renderInlineStatBlock(data.get("data"), doubleWidht=self.inAppendix)
+            if not data.get("dataType") == "monster": return []
+            if data.get("type") == "statblockInline": linesToAdd += renderer.renderInlineStatBlock(data.get("data"))
             elif data.get("type") == "statblock":
                 if self.hasCreatureData:
                     monsterFound = False
                     for monster in self.creatureData:
                         if monster.get("name") == data.get("name"): 
-                            linesToAdd += renderer.renderInlineStatBlock(monster, doubleWidht=self.inAppendix)
+                            linesToAdd += renderer.renderInlineStatBlock(monster)
                             monsterFound = True
                     if not monsterFound: linesToAdd += ["Monster @MONSTERNAME not found in source".replace("@MONSTERNAME", data.get("name"))]
                 else:
@@ -683,7 +686,7 @@ class TexRenderer:
             if isinstance(data, str):
                 if self.passedChapterHeading and self.SubenvLvl == 0 and not self.inAppendix:
                     data = self.addDropCap(data)
-                lines += [data.replace("&", "\\&") ]
+                lines += [data.replace("&", "\\&").replace("&quot;", "\"").replace("_", "\_").replace("%", "\%") ]
             elif isinstance(data, int):
                 return self.renderRecursive(depth, str(data))
             elif data.get("type") == "section" or data.get("type") == "entries":
@@ -720,7 +723,7 @@ class TexRenderer:
             super().__init__()
             with open(JSONPath) as file:
                 self.jsonData = json.load(file)
-                
+
             subtitle = ""
             if "storyline" in self.jsonData.get("adventure")[0]: 
                 subtitle = self.jsonData.get("adventure")[0].get("storyline")
